@@ -1,0 +1,9 @@
+# Build outputs & executables
+*.o
+*.out
+*.exe
+bin/
+build/
+
+# Optional: Ignore PDFs if you don't want them in version control
+# *.pdf
