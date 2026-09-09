@@ -1,0 +1,99 @@
+# Part 1 fractal timing data
+# Times are seconds; speedup = serial_time / parallel_wall_time.
+# Per-thread rows use the harness printout from ./fractal -t N --view V
+
+# ---------------------------------------------------------------------------
+# Per-thread work times (naive contiguous)
+# mapping,threads,view,thread_id,time_sec
+# ---------------------------------------------------------------------------
+mapping,threads,view,thread_id,time_sec
+naive,3,1,0,0.1058
+naive,3,1,1,0.1526
+naive,3,1,2,0.1082
+naive,3,2,0,0.1428
+naive,3,2,1,0.1100
+naive,3,2,2,0.0064
+naive,8,1,0,0.0251
+naive,8,1,1,0.0441
+naive,8,1,2,0.0681
+naive,8,1,3,0.0596
+naive,8,1,4,0.0586
+naive,8,1,5,0.0636
+naive,8,1,6,0.0545
+naive,8,1,7,0.0238
+naive,16,1,0,0.0245
+naive,16,1,1,0.0209
+naive,16,1,2,0.0212
+naive,16,1,3,0.0503
+naive,16,1,4,0.0472
+naive,16,1,5,0.0565
+naive,16,1,6,0.0407
+naive,16,1,7,0.0443
+naive,16,1,8,0.0342
+naive,16,1,9,0.0321
+naive,16,1,10,0.0514
+naive,16,1,11,0.0396
+naive,16,1,12,0.0326
+naive,16,1,13,0.0232
+naive,16,1,14,0.0260
+naive,16,1,15,0.0216
+
+# ---------------------------------------------------------------------------
+# Per-thread work times (interleaved)
+# mapping,threads,view,thread_id,time_sec
+# ---------------------------------------------------------------------------
+mapping,threads,view,thread_id,time_sec
+interleaved,3,1,0,0.1235
+interleaved,3,1,1,0.1235
+interleaved,3,1,2,0.1208
+interleaved,3,2,0,0.0877
+interleaved,3,2,1,0.0882
+interleaved,3,2,2,0.0854
+interleaved,8,1,0,0.0539
+interleaved,8,1,1,0.0536
+interleaved,8,1,2,0.0493
+interleaved,8,1,3,0.0485
+interleaved,8,1,4,0.0490
+interleaved,8,1,5,0.0575
+interleaved,8,1,6,0.0483
+interleaved,8,1,7,0.0520
+interleaved,8,2,0,0.0380
+interleaved,8,2,1,0.0407
+interleaved,8,2,2,0.0389
+interleaved,8,2,3,0.0378
+interleaved,8,2,4,0.0398
+interleaved,8,2,5,0.0465
+interleaved,8,2,6,0.0335
+interleaved,8,2,7,0.0386
+interleaved,16,1,0,0.0454
+interleaved,16,1,1,0.0288
+interleaved,16,1,2,0.0373
+interleaved,16,1,3,0.0351
+interleaved,16,1,4,0.0439
+interleaved,16,1,5,0.0428
+interleaved,16,1,6,0.0382
+interleaved,16,1,7,0.0450
+interleaved,16,1,8,0.0430
+interleaved,16,1,9,0.0279
+interleaved,16,1,10,0.0247
+interleaved,16,1,11,0.0287
+interleaved,16,1,12,0.0289
+interleaved,16,1,13,0.0336
+interleaved,16,1,14,0.0414
+interleaved,16,1,15,0.0358
+interleaved,16,2,0,0.0190
+interleaved,16,2,1,0.0270
+interleaved,16,2,2,0.0259
+interleaved,16,2,3,0.0246
+interleaved,16,2,4,0.0256
+interleaved,16,2,5,0.0187
+interleaved,16,2,6,0.0257
+interleaved,16,2,7,0.0298
+interleaved,16,2,8,0.0261
+interleaved,16,2,9,0.0254
+interleaved,16,2,10,0.0230
+interleaved,16,2,11,0.0170
+interleaved,16,2,12,0.0242
+interleaved,16,2,13,0.0207
+interleaved,16,2,14,0.0170
+interleaved,16,2,15,0.0176

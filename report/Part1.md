@@ -1,35 +1,23 @@
-# Part 1 — Parallel Fractal Rendering (under one page)
+Part 1: Parallel Fractal Rendering
 
-**Mapping switch:** rebuild with `-DFRACTAL_INTERLEAVE=0` (naive contiguous blocks) or `=1` / default (interleaved rows).
+We parallelize a 900×601 cubic fractal (z←z³+c, ≤300 iters/pixel). Work is compute-bound but uneven (brighter pixels cost more). No mutex: each pixel is written by one thread.
 
-## Stage 1 — Correctness
-Two-thread top/bottom split (generalized contiguous formula) matches the serial reference: `./fractal -t 2 --check` → **PASSED** on View 1 (~2.01×).
+Is speedup linear? No. Naive contiguous row blocks do not scale linearly because row cost varies across the image. Equal rows ≠ equal work (8 threads: View1 5.62×, View2 4.04×, not 8×).
 
-## Stages 2–3 — Naive contiguous blocks + per-thread times
-Speedup is **not linear**. Cost per row is non-uniform: bright (high-iteration) regions take far longer than dark ones.
+What does the 3-thread point reveal? Height 601 → blocks ≈ [0,200), [200,400), [400,601). Wall time ≈ max thread time.
+Per-thread times (naive, 3 threads):
 
-**Best naive `--sweep` (speedup):**
+Thread	View1 (s)	View2 (s)
+0	0.106	0.143
+1	0.153	0.110
+2	0.108	0.006
 
-| Threads | View 1 | View 2 |
-|--------:|-------:|-------:|
-| 1 | 0.99 | 1.00 |
-| 2 | 1.96 | 1.16 |
-| **3** | **2.26** | **1.79** |
-| 4 | 2.97 | 2.20 |
-| 8 | 5.62 | 4.04 |
+View1 (~2.3×): T1 owns the middle dense band → dominates. View2 (~1.8×): zoom is upper; T2’s bottom third is nearly idle (0.006 s).
 
-**3-thread anomaly.** Height 601 → blocks ≈ rows `[0,200)`, `[200,400)`, `[400,601)`. Wall time ≈ max thread time.
+What did per-thread timings show? Finish time tracks the slowest thread, proving load imbalance. After interleaving, 3-thread View1 times ≈ 0.124 / 0.124 / 0.121 s (nearly balanced).
 
-- **View 1** (`./fractal -t 3 --view 1`): T0=0.106s, **T1=0.153s**, T2=0.108s. The middle band hits the dense set near the origin, so T1 dominates → only ~2.3× instead of ~3×.
-- **View 2** (`./fractal -t 3 --view 2`): T0=0.143s, T1=0.110s, **T2=0.006s**. The zoom is in the upper image; T2’s bottom third is almost empty → ~1.8×. Same static policy, different vertical cost map.
+Stage 4 mapping + speedup: changed which rows each thread owns (not how many): interleaved rows i, i+N, i+2N… (no sync). Mixes expensive/cheap rows. At 8 threads: View1 7.56×, View2 7.41× (~7–8× target). Kept both policies via compile-time FRACTAL_INTERLEAVE (0=naive, 1=interleaved).
 
-## Stage 4 — Interleaved rows
-Changed **which** rows each thread owns, not how many: thread `i` takes rows `i, i+N, i+2N, …` (no sync). Expensive and cheap rows are mixed.
+Key speedups (threads → V1 / V2): Naive 3: 2.26 / 1.79; Naive 8: 5.62 / 4.04; Interleaved 3: 2.88 / 2.92; Interleaved 8: 7.56 / 7.41.
 
-**Best interleaved `--sweep` @ 8 threads:** View 1 **7.56×**, View 2 **7.41×** (both in the ~7–8× target). Per-thread times at `-t 3` become nearly equal (e.g. View 1: 0.124 / 0.124 / 0.121 s).
-
-## Stage 5 — 16 threads
-On this host (`nproc`=16), interleaved View 1 went from ~6–7.5× at 8 threads to ~7.1× at 16 in one run — a small gain, not 2×. Extra threads add scheduling/cache contention; beyond physical cores (or when imbalance is already fixed) returns diminish. **16 does not help much over a well-balanced 8.**
-
-## Graph
-See [fractal_speedup.svg](fractal_speedup.svg) (naive vs interleaved, both views, vs ideal linear).
+Did 16 help over 8? Only a small gain. Once balanced, extra threads add scheduling/cache overhead; 16 is not much faster than a well-balanced 8.
