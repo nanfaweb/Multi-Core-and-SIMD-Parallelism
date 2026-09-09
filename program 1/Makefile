@@ -1,5 +1,7 @@
 CXX=g++
-CXXFLAGS=-O2 -std=c++11 -Wall -Wextra -pthread
+# FRACTAL_INTERLEAVE=0 → naive contiguous blocks; 1 → interleaved rows (default)
+FRACTAL_INTERLEAVE ?= 1
+CXXFLAGS=-O2 -std=c++11 -Wall -Wextra -pthread -DFRACTAL_INTERLEAVE=$(FRACTAL_INTERLEAVE)
 APP=fractal
 OBJDIR=objs
 
@@ -19,6 +21,14 @@ $(OBJDIR)/fractalSerial.o: fractalSerial.cpp
 
 $(OBJDIR)/fractalThread.o: fractalThread.cpp CycleTimer.h
 	$(CXX) $(CXXFLAGS) -c fractalThread.cpp -o $@
+
+naive:
+	$(MAKE) clean
+	$(MAKE) FRACTAL_INTERLEAVE=0
+
+improved:
+	$(MAKE) clean
+	$(MAKE) FRACTAL_INTERLEAVE=1
 
 clean:
 	rm -rf $(OBJDIR) $(APP) *.ppm

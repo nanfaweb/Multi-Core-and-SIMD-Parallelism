@@ -1,0 +1,92 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="720" height="420">
+<rect width="720" height="420" fill="white"/>
+<text x="360" y="24" text-anchor="middle" font-size="16" font-family="sans-serif" font-weight="bold">Part 1: Fractal Speedup vs Threads</text>
+<line x1="60" y1="40" x2="60" y2="370" stroke="#333" stroke-width="1.5"/>
+<line x1="60" y1="370" x2="690" y2="370" stroke="#333" stroke-width="1.5"/>
+<line x1="60.0" y1="40" x2="60.0" y2="370" stroke="#eee"/>
+<text x="60.0" y="388" text-anchor="middle" font-size="11" font-family="sans-serif">1</text>
+<line x1="150.0" y1="40" x2="150.0" y2="370" stroke="#eee"/>
+<text x="150.0" y="388" text-anchor="middle" font-size="11" font-family="sans-serif">2</text>
+<line x1="240.0" y1="40" x2="240.0" y2="370" stroke="#eee"/>
+<text x="240.0" y="388" text-anchor="middle" font-size="11" font-family="sans-serif">3</text>
+<line x1="330.0" y1="40" x2="330.0" y2="370" stroke="#eee"/>
+<text x="330.0" y="388" text-anchor="middle" font-size="11" font-family="sans-serif">4</text>
+<line x1="420.0" y1="40" x2="420.0" y2="370" stroke="#eee"/>
+<text x="420.0" y="388" text-anchor="middle" font-size="11" font-family="sans-serif">5</text>
+<line x1="510.0" y1="40" x2="510.0" y2="370" stroke="#eee"/>
+<text x="510.0" y="388" text-anchor="middle" font-size="11" font-family="sans-serif">6</text>
+<line x1="600.0" y1="40" x2="600.0" y2="370" stroke="#eee"/>
+<text x="600.0" y="388" text-anchor="middle" font-size="11" font-family="sans-serif">7</text>
+<line x1="690.0" y1="40" x2="690.0" y2="370" stroke="#eee"/>
+<text x="690.0" y="388" text-anchor="middle" font-size="11" font-family="sans-serif">8</text>
+<line x1="60" y1="370.0" x2="690" y2="370.0" stroke="#eee"/>
+<text x="52" y="374.0" text-anchor="end" font-size="11" font-family="sans-serif">0</text>
+<line x1="60" y1="331.2" x2="690" y2="331.2" stroke="#eee"/>
+<text x="52" y="335.2" text-anchor="end" font-size="11" font-family="sans-serif">1</text>
+<line x1="60" y1="292.4" x2="690" y2="292.4" stroke="#eee"/>
+<text x="52" y="296.4" text-anchor="end" font-size="11" font-family="sans-serif">2</text>
+<line x1="60" y1="253.5" x2="690" y2="253.5" stroke="#eee"/>
+<text x="52" y="257.5" text-anchor="end" font-size="11" font-family="sans-serif">3</text>
+<line x1="60" y1="214.7" x2="690" y2="214.7" stroke="#eee"/>
+<text x="52" y="218.7" text-anchor="end" font-size="11" font-family="sans-serif">4</text>
+<line x1="60" y1="175.9" x2="690" y2="175.9" stroke="#eee"/>
+<text x="52" y="179.9" text-anchor="end" font-size="11" font-family="sans-serif">5</text>
+<line x1="60" y1="137.1" x2="690" y2="137.1" stroke="#eee"/>
+<text x="52" y="141.1" text-anchor="end" font-size="11" font-family="sans-serif">6</text>
+<line x1="60" y1="98.2" x2="690" y2="98.2" stroke="#eee"/>
+<text x="52" y="102.2" text-anchor="end" font-size="11" font-family="sans-serif">7</text>
+<line x1="60" y1="59.4" x2="690" y2="59.4" stroke="#eee"/>
+<text x="52" y="63.4" text-anchor="end" font-size="11" font-family="sans-serif">8</text>
+<text x="360" y="410" text-anchor="middle" font-size="12" font-family="sans-serif">Threads</text>
+<text x="18" y="205" text-anchor="middle" font-size="12" font-family="sans-serif" transform="rotate(-90 18 205)">Speedup</text>
+<polyline fill="none" stroke="#999999" stroke-width="2" stroke-dasharray="4 3" points="60.0,331.2 150.0,292.4 240.0,253.5 330.0,214.7 420.0,175.9 510.0,137.1 600.0,98.2 690.0,59.4"/>
+<circle cx="60.0" cy="331.2" r="3.5" fill="#999999"/>
+<circle cx="150.0" cy="292.4" r="3.5" fill="#999999"/>
+<circle cx="240.0" cy="253.5" r="3.5" fill="#999999"/>
+<circle cx="330.0" cy="214.7" r="3.5" fill="#999999"/>
+<circle cx="420.0" cy="175.9" r="3.5" fill="#999999"/>
+<circle cx="510.0" cy="137.1" r="3.5" fill="#999999"/>
+<circle cx="600.0" cy="98.2" r="3.5" fill="#999999"/>
+<circle cx="690.0" cy="59.4" r="3.5" fill="#999999"/>
+<polyline fill="none" stroke="#c0392b" stroke-width="2" points="60.0,331.6 150.0,293.9 240.0,282.3 330.0,254.7 420.0,256.6 510.0,199.2 600.0,171.6 690.0,151.8"/>
+<circle cx="60.0" cy="331.6" r="3.5" fill="#c0392b"/>
+<circle cx="150.0" cy="293.9" r="3.5" fill="#c0392b"/>
+<circle cx="240.0" cy="282.3" r="3.5" fill="#c0392b"/>
+<circle cx="330.0" cy="254.7" r="3.5" fill="#c0392b"/>
+<circle cx="420.0" cy="256.6" r="3.5" fill="#c0392b"/>
+<circle cx="510.0" cy="199.2" r="3.5" fill="#c0392b"/>
+<circle cx="600.0" cy="171.6" r="3.5" fill="#c0392b"/>
+<circle cx="690.0" cy="151.8" r="3.5" fill="#c0392b"/>
+<polyline fill="none" stroke="#e67e22" stroke-width="2" stroke-dasharray="6 3" points="60.0,331.2 150.0,325.0 240.0,300.5 330.0,284.6 420.0,263.6 510.0,242.7 600.0,236.8 690.0,213.2"/>
+<circle cx="60.0" cy="331.2" r="3.5" fill="#e67e22"/>
+<circle cx="150.0" cy="325.0" r="3.5" fill="#e67e22"/>
+<circle cx="240.0" cy="300.5" r="3.5" fill="#e67e22"/>
+<circle cx="330.0" cy="284.6" r="3.5" fill="#e67e22"/>
+<circle cx="420.0" cy="263.6" r="3.5" fill="#e67e22"/>
+<circle cx="510.0" cy="242.7" r="3.5" fill="#e67e22"/>
+<circle cx="600.0" cy="236.8" r="3.5" fill="#e67e22"/>
+<circle cx="690.0" cy="213.2" r="3.5" fill="#e67e22"/>
+<polyline fill="none" stroke="#1f77b4" stroke-width="2" points="60.0,331.6 150.0,294.3 240.0,258.2 330.0,222.1 420.0,187.5 510.0,151.4 600.0,158.4 690.0,76.5"/>
+<circle cx="60.0" cy="331.6" r="3.5" fill="#1f77b4"/>
+<circle cx="150.0" cy="294.3" r="3.5" fill="#1f77b4"/>
+<circle cx="240.0" cy="258.2" r="3.5" fill="#1f77b4"/>
+<circle cx="330.0" cy="222.1" r="3.5" fill="#1f77b4"/>
+<circle cx="420.0" cy="187.5" r="3.5" fill="#1f77b4"/>
+<circle cx="510.0" cy="151.4" r="3.5" fill="#1f77b4"/>
+<circle cx="600.0" cy="158.4" r="3.5" fill="#1f77b4"/>
+<circle cx="690.0" cy="76.5" r="3.5" fill="#1f77b4"/>
+<polyline fill="none" stroke="#2ca02c" stroke-width="2" stroke-dasharray="6 3" points="60.0,330.8 150.0,292.4 240.0,256.6 330.0,222.5 420.0,194.1 510.0,149.5 600.0,161.5 690.0,82.3"/>
+<circle cx="60.0" cy="330.8" r="3.5" fill="#2ca02c"/>
+<circle cx="150.0" cy="292.4" r="3.5" fill="#2ca02c"/>
+<circle cx="240.0" cy="256.6" r="3.5" fill="#2ca02c"/>
+<circle cx="330.0" cy="222.5" r="3.5" fill="#2ca02c"/>
+<circle cx="420.0" cy="194.1" r="3.5" fill="#2ca02c"/>
+<circle cx="510.0" cy="149.5" r="3.5" fill="#2ca02c"/>
+<circle cx="600.0" cy="161.5" r="3.5" fill="#2ca02c"/>
+<circle cx="690.0" cy="82.3" r="3.5" fill="#2ca02c"/>
+<line x1="470" y1="55" x2="492" y2="55" stroke="#999999" stroke-width="2" stroke-dasharray="4 3"/><circle cx="481" cy="55" r="3" fill="#999999"/><text x="498" y="59" font-size="12" font-family="sans-serif">Ideal linear</text>
+<line x1="470" y1="73" x2="492" y2="73" stroke="#c0392b" stroke-width="2"/><circle cx="481" cy="73" r="3" fill="#c0392b"/><text x="498" y="77" font-size="12" font-family="sans-serif">Naive View 1</text>
+<line x1="470" y1="91" x2="492" y2="91" stroke="#e67e22" stroke-width="2" stroke-dasharray="6 3"/><circle cx="481" cy="91" r="3" fill="#e67e22"/><text x="498" y="95" font-size="12" font-family="sans-serif">Naive View 2</text>
+<line x1="470" y1="109" x2="492" y2="109" stroke="#1f77b4" stroke-width="2"/><circle cx="481" cy="109" r="3" fill="#1f77b4"/><text x="498" y="113" font-size="12" font-family="sans-serif">Interleaved View 1</text>
+<line x1="470" y1="127" x2="492" y2="127" stroke="#2ca02c" stroke-width="2" stroke-dasharray="6 3"/><circle cx="481" cy="127" r="3" fill="#2ca02c"/><text x="498" y="131" font-size="12" font-family="sans-serif">Interleaved View 2</text>
+</svg>

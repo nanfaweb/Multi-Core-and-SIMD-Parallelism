@@ -27,6 +27,12 @@
 #include <cstdlib>
 #include "CycleTimer.h"
 
+// Set to 0 for naive contiguous row blocks (Stages 1–3).
+// Set to 1 for interleaved / cyclic row assignment (Stage 4).
+#ifndef FRACTAL_INTERLEAVE
+#define FRACTAL_INTERLEAVE 1
+#endif
+
 // Arguments passed to each worker thread. Do not rename or remove any
 // existing field — main.cpp depends on this exact layout. You may add
 // fields if your solution needs them.
@@ -52,85 +58,52 @@ extern void fractalSerial(
 
 //----------------------------------------------------------------------
 // fractalWorker() — the function each spawned thread runs.
-//
-// Right now it does nothing. Build up your solution in the stages
-// below, in order. Do not skip ahead — later parts assume earlier
-// parts are working correctly.
 //----------------------------------------------------------------------
 void fractalWorker(FractalTask* const task)
 {
-    // ===================================================================
-    // PART 1 — Basic two-thread spatial decomposition
-    // ===================================================================
-    // Get this working first, and ONLY for numThreads == 2:
-    //   - thread 0 computes the TOP half of the image (rows 0 .. height/2 - 1)
-    //   - thread 1 computes the BOTTOM half (rows height/2 .. height - 1)
-    // Call fractalSerial(...) with the correct startRow/numRows for your
-    // half, writing into task->output. This kind of decomposition —
-    // different threads own different spatial regions of the image —
-    // is called SPATIAL DECOMPOSITION.
-    //
-    // Run `./fractal -t 2 --check` and confirm you see "Correctness
-    // check: PASSED" before moving on.
+    const int threadId = task->threadId;
+    const int numThreads = task->numThreads;
+    const int height = static_cast<int>(task->height);
 
-    // ===================================================================
-    // PART 2 — Generalize to 2..8 threads + speedup analysis
-    // ===================================================================
-    // Once Part 1 works, generalize your code to handle ANY value of
-    // task->numThreads from 1 to 8 (not just 2). Use a STATIC, CONTIGUOUS
-    // block-per-thread assignment (thread i gets one contiguous range of
-    // rows — generalize the top/bottom-half idea from Part 1). task->height
-    // will not always divide evenly by task->numThreads — make sure every
-    // row is computed by exactly one thread (no row skipped, no row
-    // computed twice).
-    //
-    // This part is graded primarily through your write-up, not just your
-    // code: run `./fractal --sweep --check --view 1` (and again with
-    // `--view 2`), and in your report:
-    //   - Plot speedup (serial time / parallel time) vs. number of threads.
-    //   - Is speedup linear in the number of threads? Why or why not?
-    //   - Look closely at the 3-thread datapoint specifically, on both
-    //     views. Does it behave as you'd expect? Hypothesize why.
+    // Stage 3: time only this thread's own work (wall time for its rows).
+    const double t0 = CycleTimer::currentSeconds();
 
-    // ===================================================================
-    // PART 3 — Per-thread timing to confirm your hypothesis
-    // ===================================================================
-    // Wrap your row-computation loop with CycleTimer::currentSeconds()
-    // calls before and after, and store the elapsed time in
-    // task->threadTimes[task->threadId] — BUT only if task->threadTimes
-    // is not nullptr (some calls intentionally omit it).
-    //
-    // Run `./fractal -t 3 --view 2` and look at the per-thread times
-    // printed. Do they explain the Part 2 speedup graph? Update your
-    // write-up with this evidence.
+#if FRACTAL_INTERLEAVE
+    // Stage 4 — interleaved / cyclic rows (improved load balance).
+    // Thread i owns rows i, i+numThreads, i+2*numThreads, ...
+    // Same row counts (roughly), but expensive and cheap rows are mixed
+    // across the image instead of clustered in one contiguous block.
+    for (int row = threadId; row < height; row += numThreads) {
+        fractalSerial(
+            task->x0, task->y0, task->x1, task->y1,
+            static_cast<int>(task->width), height,
+            row, 1,
+            task->maxIterations,
+            task->output);
+    }
+#else
+    // Stages 1–2 — naive contiguous block per thread.
+    // Thread i gets rows [startRow, endRow). The multiply-then-divide
+    // split covers every row exactly once even when height % numThreads != 0.
+    // Stage 1 (2 threads) is the special case of this same formula.
+    const int startRow = (height * threadId) / numThreads;
+    const int endRow = (height * (threadId + 1)) / numThreads;
+    const int numRows = endRow - startRow;
 
-    // ===================================================================
-    // PART 4 — Improve the work assignment to hit ~7-8x speedup at 8 threads
-    // ===================================================================
-    // Your Part 2 static contiguous-block assignment likely does NOT
-    // achieve close to 8x speedup at 8 threads on both views, because
-    // the cost per row is NOT uniform across the image (some rows are
-    // much more expensive to compute than others). Modify your row
-    // assignment strategy — WITHOUT using any synchronization between
-    // threads — to fix this imbalance. You need ONE static assignment
-    // policy that works well across all thread counts (hard-coding a
-    // different policy per thread count is not allowed).
-    // Hint: a simple change to which rows a thread owns (not how many)
-    // is enough — think about how to spread each thread's rows evenly
-    // across the whole image instead of clustering them together.
-    //
-    // Target: about 7-8x speedup at 8 threads on BOTH views. If you're
-    // a bit under 7x that's fine — don't over-optimize this.
+    if (numRows > 0) {
+        fractalSerial(
+            task->x0, task->y0, task->x1, task->y1,
+            static_cast<int>(task->width), height,
+            startRow, numRows,
+            task->maxIterations,
+            task->output);
+    }
+#endif
 
-    // ===================================================================
-    // PART 5 — 16 threads
-    // ===================================================================
-    // Once Part 4 is solid, run `./fractal -t 16 --view 1` (this machine
-    // only has a handful of physical cores). Is performance noticeably
-    // better than at 8 threads? Why or why not? Answer this in your
-    // write-up — no code change is required for this part.
-
-    (void)task; // remove this line once you've implemented the above
+    const double t1 = CycleTimer::currentSeconds();
+    if (task->threadTimes != nullptr) {
+        task->threadTimes[threadId] = t1 - t0;
+    }
 }
 
 //----------------------------------------------------------------------
