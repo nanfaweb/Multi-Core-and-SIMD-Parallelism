@@ -127,15 +127,58 @@ void clampedAltSerial(float* values, int* counts, float* caps, int N, float* out
 }
 
 void clampedAltVector(float* values, int* counts, float* caps, int N, float* output) {
-    // TODO: Students implement this function.
-    //
-    // It must produce output IDENTICAL to clampedAltSerial() for any N and
-    // any VECTOR_WIDTH, using only the operations defined in PDCvector.h.
-    //
-    // For now this stub just calls the serial version so the program
-    // compiles and runs (and will report 0% credit-worthy vector
-    // utilization, since no vector instructions are used). Replace it.
-    clampedAltSerial(values, counts, caps, N, output);
+    // Process the array in chunks of VECTOR_WIDTH lanes at a time.
+    for (int i = 0; i < N; i += VECTOR_WIDTH) {
+        // How many real elements are left? (handles the tail when N % WIDTH != 0)
+        const int leftover = N - i;
+        const int width = (leftover < VECTOR_WIDTH) ? leftover : VECTOR_WIDTH;
+        __pdc_mask valid = _pdc_init_first_n(width);
+
+        // Load this chunk. Masked-off (tail) lanes are not written into.
+        __pdc_vec_float x;
+        __pdc_vec_int countsVec;
+        __pdc_vec_float capsVec;
+        _pdc_vload_float(x, values + i, valid);
+        _pdc_vload_int(countsVec, counts + i, valid);
+        _pdc_vload_float(capsVec, caps + i, valid);
+
+        // Serial starts with acc = values[i].
+        __pdc_vec_float acc = x;
+
+        // "alive" = lanes that may still take steps (not yet clamped off).
+        // Starts as all valid lanes; clamping permanently clears a lane.
+        __pdc_mask alive = valid;
+
+        // All lanes share the same step index j (lockstep), like one clock.
+        for (int j = 0; ; j++) {
+            // stillHasSteps: counts[i] > j  (same as j < counts[i]; no vlt_int exists)
+            __pdc_vec_int jVec = _pdc_vset_int(j);
+            __pdc_mask stillHasSteps = _pdc_vgt_int(countsVec, jVec, alive);
+            __pdc_mask work = _pdc_mask_and(alive, stillHasSteps);
+            if (_pdc_cntbits(work) == 0)
+                break;
+
+            // Even step: multiply; odd step: add. Only on "work" lanes.
+            if (j % 2 == 0)
+                acc = _pdc_vmult_float(acc, x, work);
+            else
+                acc = _pdc_vadd_float(acc, x, work);
+
+            // If acc > cap: set acc = cap and stop that lane forever.
+            __pdc_mask hitCap = _pdc_vgt_float(acc, capsVec, work);
+            acc = _pdc_vmove_float(acc, capsVec, hitCap);
+            // mask_not(hitCap, alive) = alive AND NOT hitCap
+            alive = _pdc_mask_not(hitCap, alive);
+        }
+
+        // Snap tiny results to exactly 0 (same as serial).
+        __pdc_vec_float threshold = _pdc_vset_float(0.0001f);
+        __pdc_vec_float zeros = _pdc_vset_float(0.0f);
+        __pdc_mask tooSmall = _pdc_vlt_float(acc, threshold, valid);
+        acc = _pdc_vmove_float(acc, zeros, tooSmall);
+
+        _pdc_vstore_float(output + i, acc, valid);
+    }
 }
 
 // ---------------------------------------------------------------------
@@ -149,10 +192,32 @@ float dotProductSerial(float* a, float* b, int N) {
 }
 
 float dotProductVector(float* a, float* b, int N) {
-    // TODO (optional, 5 bonus marks): implement using _pdc_hadd_float and
-    // _pdc_interleave_float so the reduction step costs fewer than O(N)
-    // vector instructions.
-    return dotProductSerial(a, b, N);
+    // Assume N is a multiple of VECTOR_WIDTH (harness guarantees this).
+    __pdc_mask all = _pdc_init_ones();
+    __pdc_vec_float total = _pdc_vset_float(0.0f);
+
+    for (int i = 0; i < N; i += VECTOR_WIDTH) {
+        __pdc_vec_float va, vb;
+        _pdc_vload_float(va, a + i, all);
+        _pdc_vload_float(vb, b + i, all);
+
+        // Lane-wise products: [a0*b0, a1*b1, ...]
+        __pdc_vec_float prod = _pdc_vmult_float(va, vb, all);
+
+        // Reduce W products to one sum in O(log W) hadd+interleave rounds.
+        // hadd: pair lanes (0+1), (2+3), ...
+        // interleave: pack those pair-sums into the front so the next hadd
+        // can combine them. After log2(W) rounds, every lane holds the sum.
+        __pdc_vec_float reduced = prod;
+        for (int w = VECTOR_WIDTH; w > 1; w /= 2) {
+            reduced = _pdc_hadd_float(reduced);
+            reduced = _pdc_interleave_float(reduced);
+        }
+
+        total = _pdc_vadd_float(total, reduced, all);
+    }
+
+    return total.value[0];
 }
 
 // =========================================================================
