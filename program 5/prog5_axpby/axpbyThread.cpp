@@ -37,21 +37,23 @@ struct AxpbyTask {
 };
 
 void axpbyWorker(AxpbyTask* const task) {
-    // TODO:
-    //   1. Compute this thread's contiguous index range [startIdx, endIdx)
-    //      given task->threadId, task->numThreads, and task->N.
-    //      Remember N may not divide evenly — the last thread must
-    //      cover any leftover indices.
-    //   2. For each index i in that range, compute:
-    //          task->result[i] = task->alpha * task->X[i] + task->beta * task->Y[i];
-    //   3. Record how long this thread spent working in
-    //      task->threadTimes[task->threadId] (use CycleTimer::currentSeconds()
-    //      before and after your loop). NOTE: threadTimes may be nullptr
-    //      in some calls — check `if (task->threadTimes != nullptr)`
-    //      before writing to it, or you will crash on those calls.
+    // Contiguous static split (same idea as naive fractal rows, but on array indices).
+    // Thread t owns [start, end). Multiply-then-divide covers every index exactly once
+    // even when N does not divide evenly by numThreads.
+    const int start = (task->N * task->threadId) / task->numThreads;
+    const int end = (task->N * (task->threadId + 1)) / task->numThreads;
 
-    std::fprintf(stderr, "Thread %d: axpbyWorker not yet implemented!\n",
-                  task->threadId);
+    const double t0 = CycleTimer::currentSeconds();
+
+    // Only this thread writes result[start .. end-1]. No mutex needed.
+    for (int i = start; i < end; i++) {
+        task->result[i] = task->alpha * task->X[i] + task->beta * task->Y[i];
+    }
+
+    const double t1 = CycleTimer::currentSeconds();
+    if (task->threadTimes != nullptr) {
+        task->threadTimes[task->threadId] = t1 - t0;
+    }
 }
 
 void axpbyThread(int numThreads, int N, float alpha, float beta,
