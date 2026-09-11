@@ -1,10 +1,7 @@
-# Part 1 fractal timing data
-# Times are seconds; speedup = serial_time / parallel_wall_time.
-# Per-thread rows use the harness printout from ./fractal -t N --view V
+# Part 1 timing data
 
 # ---------------------------------------------------------------------------
 # Per-thread work times (naive contiguous)
-# mapping,threads,view,thread_id,time_sec
 # ---------------------------------------------------------------------------
 mapping,threads,view,thread_id,time_sec
 naive,3,1,0,0.1058
@@ -40,7 +37,6 @@ naive,16,1,15,0.0216
 
 # ---------------------------------------------------------------------------
 # Per-thread work times (interleaved)
-# mapping,threads,view,thread_id,time_sec
 # ---------------------------------------------------------------------------
 mapping,threads,view,thread_id,time_sec
 interleaved,3,1,0,0.1235

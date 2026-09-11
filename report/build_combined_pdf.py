@@ -1,39 +1,23 @@
 #!/usr/bin/env python3
-"""
-Build the combined Assignment 1 report as a PDF.
-
-No third-party libraries are used. The PDF is emitted by hand using the
-Type 1 base-14 Times family, so text is real Times New Roman metrics and
-paragraphs are justified using the Tw (word-spacing) operator.
-
-Usage:  python3 build_combined_pdf.py
-Output: Assignment1_Report.pdf  (same directory)
-"""
+"""Build Assignment 1 combined PDF report (Times text, coloured graphs)."""
 
 from pathlib import Path
 
-# ----------------------------------------------------------------------
-# Edit these two lines before submitting.
-# ----------------------------------------------------------------------
-STUDENT_NAME = "Saad"
-ROLL_NUMBER = "<roll number>"
+STUDENT_NAME = "Afnan Asif"
+ROLL_NUMBER = "23L-0709"
 
 OUT = Path(__file__).resolve().parent / "Assignment1_Report.pdf"
 
-# A4 in PostScript points.
 PAGE_W, PAGE_H = 595.276, 841.890
-MARGIN_L = 64.0
-MARGIN_R = 64.0
-MARGIN_T = 64.0
-MARGIN_B = 64.0
+MARGIN_L = 72.0
+MARGIN_R = 72.0
+MARGIN_T = 72.0
+MARGIN_B = 72.0
 COL_W = PAGE_W - MARGIN_L - MARGIN_R
 
-BODY_SIZE = 10.5
-BODY_LEAD = 14.5
+BODY_SIZE = 11.0
+BODY_LEAD = 14.0
 
-# ----------------------------------------------------------------------
-# Base-14 Times metrics (units per 1000 em), ASCII range only.
-# ----------------------------------------------------------------------
 TIMES_ROMAN = {
     ' ': 250, '!': 333, '"': 408, '#': 500, '$': 500, '%': 833, '&': 778,
     "'": 333, '(': 333, ')': 333, '*': 500, '+': 564, ',': 250, '-': 333,
@@ -85,7 +69,6 @@ TIMES_ITALIC = {
     '{': 400, '|': 275, '}': 400, '~': 541,
 }
 
-# F1 = Times-Roman, F2 = Times-Bold, F3 = Times-Italic
 METRICS = {"F1": TIMES_ROMAN, "F2": TIMES_BOLD, "F3": TIMES_ITALIC}
 
 UNICODE_FALLBACK = {
@@ -112,9 +95,6 @@ def text_width(s: str, font: str, size: float) -> float:
     return sum(table.get(ch, 500) for ch in s) * size / 1000.0
 
 
-# ----------------------------------------------------------------------
-# Drawing primitives / flow layout
-# ----------------------------------------------------------------------
 class Doc:
     def __init__(self):
         self.pages = []
@@ -123,7 +103,6 @@ class Doc:
         self.figure_no = 0
         self.table_no = 0
 
-    # -- low level ------------------------------------------------------
     def _show(self, x, y, size, s, font="F1", word_space=0.0):
         s = pdf_escape(sanitize(s))
         tw = f"{word_space:.3f} Tw " if word_space else ""
@@ -133,19 +112,21 @@ class Doc:
         if word_space:
             self.ops.append("BT 0 Tw ET")
 
-    def _line(self, x1, y1, x2, y2, w=0.6, gray=0.35):
-        self.ops.append(
-            f"q {gray:.2f} G {w:.2f} w {x1:.2f} {y1:.2f} m {x2:.2f} {y2:.2f} l S Q"
-        )
-
-    def _rgb_line(self, x1, y1, x2, y2, rgb, w=1.3):
+    def _line(self, x1, y1, x2, y2, w=0.7, rgb=(0, 0, 0)):
         r, g, b = rgb
         self.ops.append(
             f"q {r:.3f} {g:.3f} {b:.3f} RG {w:.2f} w "
             f"{x1:.2f} {y1:.2f} m {x2:.2f} {y2:.2f} l S Q"
         )
 
-    def _dot(self, x, y, rgb, r=2.0):
+    def _dash_line(self, x1, y1, x2, y2, dash="4 3", w=0.7, rgb=(0, 0, 0)):
+        r, g, b = rgb
+        self.ops.append(
+            f"q {r:.3f} {g:.3f} {b:.3f} RG {w:.2f} w [{dash}] 0 d "
+            f"{x1:.2f} {y1:.2f} m {x2:.2f} {y2:.2f} l S Q"
+        )
+
+    def _dot(self, x, y, rgb, r=2.2):
         red, g, b = rgb
         k = 0.5523 * r
         self.ops.append(
@@ -157,7 +138,6 @@ class Doc:
             f"{x + k:.2f} {y - r:.2f} {x + r:.2f} {y - k:.2f} {x + r:.2f} {y:.2f} c f Q"
         )
 
-    # -- page management ------------------------------------------------
     def new_page(self):
         if self.ops:
             self.pages.append(self.ops)
@@ -165,58 +145,47 @@ class Doc:
         self.y = PAGE_H - MARGIN_T
 
     def need(self, height):
-        if self.y - height < MARGIN_B + 22:
+        if self.y - height < MARGIN_B + 18:
             self.new_page()
 
     def finish(self):
         if self.ops:
             self.pages.append(self.ops)
-        # page numbers
         for idx, ops in enumerate(self.pages, start=1):
             label = f"{idx}"
-            w = text_width(label, "F1", 9)
+            w = text_width(label, "F1", 10)
             ops.append(
-                f"BT /F1 9.00 Tf 1 0 0 1 {(PAGE_W - w) / 2:.2f} "
-                f"{MARGIN_B - 26:.2f} Tm ({label}) Tj ET"
+                f"BT /F1 10.00 Tf 1 0 0 1 {(PAGE_W - w) / 2:.2f} "
+                f"{MARGIN_B - 28:.2f} Tm ({label}) Tj ET"
             )
 
-    # -- block content --------------------------------------------------
     def title_block(self):
-        self.y -= 4
-        for line, size, font in [
+        lines = [
             ("National University of Computer and Emerging Sciences", 11, "F1"),
             ("CS3006 - Parallel and Distributed Computing", 11, "F1"),
-        ]:
-            w = text_width(line, font, size)
-            self._show((PAGE_W - w) / 2, self.y, size, line, font)
-            self.y -= 15
-        self.y -= 6
-        heading = "Assignment 1: Multi-Core and SIMD Parallelism"
-        w = text_width(heading, "F2", 16)
-        self._show((PAGE_W - w) / 2, self.y, 16, heading, "F2")
-        self.y -= 20
-        sub = f"{STUDENT_NAME}  |  Roll Number: {ROLL_NUMBER}  |  BS(CS)-7G"
-        w = text_width(sub, "F3", 10.5)
-        self._show((PAGE_W - w) / 2, self.y, 10.5, sub, "F3")
-        self.y -= 12
-        self._line(MARGIN_L, self.y, PAGE_W - MARGIN_R, self.y, 0.9, 0.2)
-        self.y -= 20
+            ("Assignment 1 Report", 14, "F2"),
+            (f"{STUDENT_NAME}  |  {ROLL_NUMBER}", 11, "F1"),
+        ]
+        for text, size, font in lines:
+            w = text_width(text, font, size)
+            self._show((PAGE_W - w) / 2, self.y, size, text, font)
+            self.y -= size + 6
+        self.y -= 4
+        self._line(MARGIN_L, self.y, PAGE_W - MARGIN_R, self.y, 1.0)
+        self.y -= 18
 
     def h1(self, text):
-        self.need(46)
-        self.y -= 4
-        self._show(MARGIN_L, self.y, 13.5, text, "F2")
-        self.y -= 6
-        self._line(MARGIN_L, self.y, PAGE_W - MARGIN_R, self.y, 0.7, 0.45)
-        self.y -= 15
+        self.need(34)
+        self.y -= 2
+        self._show(MARGIN_L, self.y, 12.5, text, "F2")
+        self.y -= 16
 
     def h2(self, text):
-        self.need(36)
-        self.y -= 3
-        self._show(MARGIN_L, self.y, 11.5, text, "F2")
-        self.y -= 15
+        self.need(28)
+        self._show(MARGIN_L, self.y, 11.0, text, "F2")
+        self.y -= 14
 
-    def para(self, text, size=BODY_SIZE, lead=BODY_LEAD, indent=0.0, justify=True):
+    def para(self, text, size=BODY_SIZE, lead=BODY_LEAD, indent=0.0):
         words = sanitize(text).split()
         if not words:
             return
@@ -244,7 +213,7 @@ class Doc:
             natural = sum(text_width(w, "F1", size) for w in line_words)
             gaps = len(line_words) - 1
             joined = " ".join(line_words)
-            if justify and not last and gaps > 0:
+            if not last and gaps > 0:
                 extra = max_w - natural - gaps * space_w
                 ws = extra / gaps
                 self._show(MARGIN_L + indent, self.y, size, joined, "F1", ws)
@@ -253,31 +222,21 @@ class Doc:
             self.y -= lead
         self.y -= 4
 
-    def bullets(self, items, size=BODY_SIZE, lead=BODY_LEAD):
-        for item in items:
-            self.need(lead)
-            self._show(MARGIN_L + 6, self.y, size, "-", "F1")
-            save_y = self.y
-            self.para(item, size=size, lead=lead, indent=18.0)
-            if self.y == save_y:
-                self.y -= lead
-        self.y -= 2
-
-    def table(self, headers, rows, widths, caption=None, aligns=None, size=9.8):
-        lead = 13.5
+    def table(self, headers, rows, widths, caption=None, aligns=None, size=10.0):
+        lead = 14.0
         aligns = aligns or ["l"] + ["r"] * (len(headers) - 1)
-        total_h = lead * (len(rows) + 2) + (16 if caption else 0)
+        total_h = lead * (len(rows) + 2) + (14 if caption else 0)
         self.need(total_h)
 
         if caption:
             self.table_no += 1
             cap = f"Table {self.table_no}. {caption}"
-            self._show(MARGIN_L, self.y, 9.5, cap, "F3")
-            self.y -= 19
+            self._show(MARGIN_L, self.y, 10.0, cap, "F3")
+            self.y -= 16
 
         table_w = sum(widths)
         x0 = MARGIN_L
-        self._line(x0, self.y + 10, x0 + table_w, self.y + 10, 0.8, 0.25)
+        self._line(x0, self.y + 10, x0 + table_w, self.y + 10, 0.9)
 
         def row_out(cells, font):
             x = x0
@@ -285,7 +244,7 @@ class Doc:
                 cell = str(cell)
                 cw = text_width(cell, font, size)
                 if al == "r":
-                    self._show(x + w - 6 - cw, self.y, size, cell, font)
+                    self._show(x + w - 4 - cw, self.y, size, cell, font)
                 elif al == "c":
                     self._show(x + (w - cw) / 2, self.y, size, cell, font)
                 else:
@@ -294,49 +253,45 @@ class Doc:
             self.y -= lead
 
         row_out(headers, "F2")
-        self._line(x0, self.y + 9.5, x0 + table_w, self.y + 9.5, 0.5, 0.5)
+        self._line(x0, self.y + 10, x0 + table_w, self.y + 10, 0.6)
         for r in rows:
             self.need(lead)
             row_out(r, "F1")
-        self._line(x0, self.y + 9.5, x0 + table_w, self.y + 9.5, 0.8, 0.25)
+        self._line(x0, self.y + 10, x0 + table_w, self.y + 10, 0.9)
         self.y -= 12
 
-    # -- charts ---------------------------------------------------------
-    def speedup_chart(self, series, caption, height=196.0, ymax=8.5):
+    def speedup_chart(self, series, caption, height=190.0, ymax=8.5):
         """series: list of (label, values[8], rgb, dashed)."""
-        self.need(height + 74)
-        pw = COL_W - 46
-        left = MARGIN_L + 34
+        self.need(height + 70)
+        pw = COL_W - 40
+        left = MARGIN_L + 30
         bottom = self.y - height
         top = self.y
+        gray = (0.75, 0.75, 0.75)
 
-        # gridlines + ticks
         for v in range(0, int(ymax) + 1):
             gy = bottom + (v / ymax) * height
-            self._line(left, gy, left + pw, gy, 0.35, 0.86)
+            self._dash_line(left, gy, left + pw, gy, "1 3", 0.35, gray)
             lbl = str(v)
-            self._show(left - 6 - text_width(lbl, "F1", 8.5), gy - 3, 8.5, lbl)
+            self._show(left - 6 - text_width(lbl, "F1", 9), gy - 3, 9, lbl)
+
         for t in range(1, 9):
             gx = left + (t - 1) / 7.0 * pw
-            self._line(gx, bottom, gx, top, 0.3, 0.9)
             lbl = str(t)
-            self._show(gx - text_width(lbl, "F1", 8.5) / 2, bottom - 13, 8.5, lbl)
+            self._show(gx - text_width(lbl, "F1", 9) / 2, bottom - 12, 9, lbl)
 
-        # axes
-        self._line(left, bottom, left, top, 0.9, 0.2)
-        self._line(left, bottom, left + pw, bottom, 0.9, 0.2)
+        self._line(left, bottom, left, top, 1.0)
+        self._line(left, bottom, left + pw, bottom, 1.0)
 
-        # axis titles
         xt = "Number of threads"
-        self._show(left + (pw - text_width(xt, "F1", 9.5)) / 2, bottom - 27, 9.5, xt)
+        self._show(left + (pw - text_width(xt, "F1", 10)) / 2, bottom - 26, 10, xt)
         yt = "Speedup"
-        ty = bottom + (height - text_width(yt, "F1", 9.5)) / 2
+        ty = bottom + (height - text_width(yt, "F1", 10)) / 2
         self.ops.append(
-            f"BT /F1 9.50 Tf 0 1 -1 0 {MARGIN_L - 2:.2f} {ty:.2f} Tm "
+            f"BT /F1 10.00 Tf 0 1 -1 0 {MARGIN_L:.2f} {ty:.2f} Tm "
             f"({pdf_escape(yt)}) Tj ET"
         )
 
-        # data
         for _label, values, rgb, dashed in series:
             pts = [
                 (left + i / 7.0 * pw, bottom + (v / ymax) * height)
@@ -346,37 +301,31 @@ class Doc:
                 x1, y1 = pts[i]
                 x2, y2 = pts[i + 1]
                 if dashed:
-                    ax = x1 + 0.15 * (x2 - x1)
-                    ay = y1 + 0.15 * (y2 - y1)
-                    bx = x1 + 0.60 * (x2 - x1)
-                    by = y1 + 0.60 * (y2 - y1)
-                    self._rgb_line(ax, ay, bx, by, rgb, 1.0)
+                    self._dash_line(x1, y1, x2, y2, "5 3", 1.15, rgb)
                 else:
-                    self._rgb_line(x1, y1, x2, y2, rgb, 1.35)
+                    self._line(x1, y1, x2, y2, 1.35, rgb)
             if not dashed:
                 for x, y in pts:
-                    self._dot(x, y, rgb, 2.0)
+                    self._dot(x, y, rgb, 2.3)
 
-        # legend, placed top-left where no curve reaches
-        ly = top - 12
-        lx = left + 14
-        for _label, _values, rgb, dashed in series:
-            self._rgb_line(lx, ly + 3, lx + 20, ly + 3, rgb, 1.2)
-            if not dashed:
-                self._dot(lx + 10, ly + 3, rgb, 1.9)
-            self._show(lx + 26, ly, 8.8, _label)
+        ly = top - 10
+        lx = left + 10
+        for label, _values, rgb, dashed in series:
+            if dashed:
+                self._dash_line(lx, ly + 3, lx + 18, ly + 3, "5 3", 1.15, rgb)
+            else:
+                self._line(lx, ly + 3, lx + 18, ly + 3, 1.35, rgb)
+                self._dot(lx + 9, ly + 3, rgb, 2.0)
+            self._show(lx + 24, ly, 9, label)
             ly -= 12
 
-        self.y = bottom - 40
+        self.y = bottom - 38
         self.figure_no += 1
         cap = f"Figure {self.figure_no}. {caption}"
-        self._show(MARGIN_L, self.y, 9.5, cap, "F3")
-        self.y -= 20
+        self._show(MARGIN_L, self.y, 10.0, cap, "F3")
+        self.y -= 18
 
 
-# ----------------------------------------------------------------------
-# Measured data
-# ----------------------------------------------------------------------
 THREADS = list(range(1, 9))
 IDEAL = [float(t) for t in THREADS]
 NAIVE_V1 = [0.99, 1.96, 2.26, 2.97, 2.92, 4.40, 5.11, 5.62]
@@ -396,390 +345,222 @@ AXPBY_ROWS = [
 ]
 AXPBY_SPEEDUP = [r[3] for r in AXPBY_ROWS]
 
+# Colours for graphs
+C_IDEAL = (0.55, 0.55, 0.55)
+C_NAIVE1 = (0.75, 0.22, 0.17)
+C_NAIVE2 = (0.90, 0.49, 0.13)
+C_IMP1 = (0.12, 0.47, 0.71)
+C_IMP2 = (0.17, 0.63, 0.17)
+C_AXPBY = (0.12, 0.47, 0.71)
 
-# ----------------------------------------------------------------------
-# Report content
-# ----------------------------------------------------------------------
+
 def build():
     d = Doc()
     d.title_block()
 
-    # ---------------- 1. Overview ----------------
-    d.h1("1.  Overview and Test Setup")
-    d.para(
-        "This report covers all three programs of Assignment 1. Part 1 parallelises a "
-        "compute-bound cubic fractal renderer across threads, Part 2 vectorises an "
-        "irregular scalar loop against the simulated SIMD instruction set in PDCvector.h, "
-        "and Part 3 parallelises the memory-bandwidth-bound AXPBY kernel. Every number "
-        "quoted below was measured on the machine described in this section, using the "
-        "timing harnesses supplied with the starter code."
-    )
-    d.para(
-        "All measurements were taken on a 16-logical-core x86-64 machine running Linux "
-        "under WSL2. Each program was compiled at -O2 with C++11/C++17 and linked against "
-        "pthreads, exactly as the provided Makefiles specify. Because wall-clock timing is "
-        "noisy, every sweep was repeated several times and the best (or clearly typical) "
-        "run was recorded, as the assignment tips recommend. Correctness was re-checked "
-        "with the --check flag after every code change; no timing result is reported for a "
-        "configuration that did not first pass its correctness test."
-    )
-    d.bullets([
-        "Part 1: ./fractal -t N, --view 1|2, --sweep, --check (900x601 image, "
-        "maxIterations = 300).",
-        "Part 2: ./altseries -s N, -b for the bonus, with VECTOR_WIDTH set to 2, 4, 8 "
-        "and 16 at compile time.",
-        "Part 3: ./axpby -n N, -t N, --sweep, --check (alpha = 2.5, beta = -1.5).",
-    ])
+    # ---------------- Part 1 ----------------
+    d.h1("1. Part 1: Parallel Fractal Rendering")
 
-    # ---------------- 2. Part 1 ----------------
-    d.h1("2.  Part 1: Parallel Fractal Rendering with Threads")
-
-    d.h2("2.1  Workload and why no synchronisation is needed")
+    d.h2("1.1 Implementation")
     d.para(
-        "The renderer walks a 900x601 grid of pixels. Each pixel is mapped to a complex "
-        "number c and the recurrence z <- z^3 + c is iterated until the magnitude escapes "
-        "a fixed radius or until the iteration budget of 300 is exhausted. The returned "
-        "iteration count is the pixel value, so bright pixels are literally the pixels "
-        "that consumed the most arithmetic. This makes the workload compute-bound, but it "
-        "also makes the cost per pixel, and therefore the cost per image row, highly "
-        "non-uniform."
+        "The code is in fractalWorker() in fractalThread.cpp. We draw a 900x601 "
+        "fractal. Each pixel maps to a complex number c and runs z <- z^3 + c up to "
+        "300 times. Hard pixels need more math. Each thread owns different rows, so "
+        "no locks are needed."
     )
     d.para(
-        "The parallel decomposition assigns whole rows to threads. Because a row is owned "
-        "by exactly one thread, and the output buffer is indexed as output[row * width + "
-        "col], no two threads ever write to the same address. Disjoint ownership removes "
-        "the data race entirely, which is why the implementation needs no mutex, atomic, "
-        "or barrier of any kind. All student code lives in fractalWorker(); the supplied "
-        "fractalThread() spawns workers 1..N-1, runs worker 0 on the calling thread, and "
-        "then joins."
+        "Naive mapping: each thread gets one block of rows. We set startRow = "
+        "(height * threadId) / numThreads and endRow = (height * (threadId + 1)) / "
+        "numThreads so every row is covered once, even when 601 does not divide "
+        "evenly. Each thread also stores its own work time in threadTimes[threadId]."
+    )
+    d.para(
+        "Better mapping: thread i takes every Nth row (i, i+N, i+2N, ...). That mixes "
+        "hard and easy rows. FRACTAL_INTERLEAVE chooses the policy (0 = naive, 1 = "
+        "interleaved). We checked with ./fractal --sweep --check on both views."
     )
 
-    d.h2("2.2  Stage 1: two-thread spatial decomposition")
-    d.para(
-        "The first stage splits the image into two horizontal halves: thread 0 renders "
-        "rows 0 to 299 and thread 1 renders rows 300 to 600. Note that the height, 601, is "
-        "odd, so the two halves are deliberately unequal in size (300 rows against 301 "
-        "rows) rather than dropping the middle row. Running ./fractal -t 2 --check "
-        "reported a pixel-identical result against the serial reference and a speedup of "
-        "2.01x on View 1, confirming that the threading path itself was sound before any "
-        "load-balancing work began."
-    )
-
-    d.h2("2.3  Stage 2: contiguous blocks for one to eight threads")
-    d.para(
-        "The two-half split generalises to any thread count by giving each thread one "
-        "unbroken block of rows. The block boundaries are computed as startRow = (height * "
-        "threadId) / numThreads and endRow = (height * (threadId + 1)) / numThreads. This "
-        "multiply-then-divide form is important: it distributes the remainder rows "
-        "automatically, so with 601 rows and 3 threads the blocks are [0, 200), [200, 400) "
-        "and [400, 601). Every row is rendered exactly once, and no row is rendered twice, "
-        "for any thread count from 1 to 16."
-    )
+    d.h2("1.2 Results and graph")
     d.table(
-        ["Threads", "View 1 speedup", "View 2 speedup"],
-        [[t, f"{a:.2f}", f"{b:.2f}"] for t, a, b in zip(THREADS, NAIVE_V1, NAIVE_V2)],
-        [110, 180, 180],
-        caption="Naive contiguous-block speedup from ./fractal --sweep --check.",
-    )
-    d.para(
-        "Speedup is clearly not linear. At eight threads the naive mapping delivers only "
-        "5.62x on View 1 and 4.04x on View 2, well short of the ideal 8x. The reason is "
-        "that equal numbers of rows do not represent equal amounts of work: a thread that "
-        "happens to own the dense part of the fractal performs far more iterations than a "
-        "thread that owns a mostly-escaped region, and the whole image is not finished "
-        "until the slowest thread finishes."
-    )
-
-    d.h2("2.4  The three-thread anomaly on both views")
-    d.para(
-        "The three-thread datapoint is the clearest illustration of this effect, and it "
-        "fails for a different reason on each view. Because the total run time is bounded "
-        "below by the slowest thread, the per-thread timings collected in stage 3 explain "
-        "the anomaly directly."
-    )
-    d.table(
-        ["Thread", "Rows owned", "View 1 time (s)", "View 2 time (s)"],
+        ["Threads", "Naive View 1", "Naive View 2", "Interleaved View 1", "Interleaved View 2"],
         [
-            ["0", "0 - 199", "0.1058", "0.1428"],
-            ["1", "200 - 399", "0.1526", "0.1100"],
-            ["2", "400 - 600", "0.1082", "0.0064"],
+            [str(t), f"{a:.2f}", f"{b:.2f}", f"{c:.2f}", f"{e:.2f}"]
+            for t, a, b, c, e in zip(THREADS, NAIVE_V1, NAIVE_V2, IMP_V1, IMP_V2)
         ],
-        [80, 120, 135, 135],
-        aligns=["l", "l", "r", "r"],
-        caption="Per-thread work time, naive contiguous mapping, three threads.",
-    )
-    d.para(
-        "On View 1 the fractal body sits in the vertical centre of the frame, so thread 1 "
-        "owns the expensive middle band and takes 0.1526 s while its two neighbours finish "
-        "in roughly 0.108 s. The run time is set by thread 1, which is why the measured "
-        "speedup is only about 2.3x instead of 3x: two of the three threads spend "
-        "approximately thirty percent of the run idle."
-    )
-    d.para(
-        "On View 2 the imbalance is far more severe and sits at the opposite end of the "
-        "image. View 2 is a zoom into the region x in [-0.90, -0.30], y in [0.30, 0.90], "
-        "so nearly all of the expensive pixels live in the upper part of the frame. Thread "
-        "2, which owns the bottom third, finishes in 0.0064 s, roughly twenty-two times "
-        "faster than thread 0. One of the three threads is therefore effectively unused "
-        "for the entire render, and the speedup collapses to about 1.8x. The important "
-        "conclusion is that a single static contiguous policy cannot be tuned for both "
-        "views, because the vertical cost distribution is different in each."
-    )
-
-    d.h2("2.5  Stage 4: interleaved row assignment")
-    d.para(
-        "The fix keeps the number of rows per thread essentially unchanged and instead "
-        "changes which rows each thread owns. Thread i is assigned rows i, i + numThreads, "
-        "i + 2 * numThreads, and so on, so each thread's rows are spread uniformly over "
-        "the whole image rather than clustered into one band. Adjacent expensive rows are "
-        "now distributed round-robin across all threads, so every thread receives a "
-        "statistically similar mixture of cheap and expensive work. The policy is a single "
-        "static rule that is applied identically at every thread count, it requires no "
-        "synchronisation, and it is selected at compile time by FRACTAL_INTERLEAVE (0 for "
-        "the naive mapping, 1 for the interleaved mapping) so that both versions remain "
-        "available in the submitted source."
-    )
-    d.table(
-        ["Threads", "View 1 speedup", "View 2 speedup"],
-        [[t, f"{a:.2f}", f"{b:.2f}"] for t, a, b in zip(THREADS, IMP_V1, IMP_V2)],
-        [110, 180, 180],
-        caption="Interleaved-row speedup from ./fractal --sweep --check (best of runs).",
+        [70, 85, 85, 110, 110],
+        caption="Fractal speedup from ./fractal --sweep --check.",
+        aligns=["c", "r", "r", "r", "r"],
     )
     d.speedup_chart(
         [
-            ("Ideal linear", IDEAL, (0.55, 0.55, 0.55), True),
-            ("Naive, View 1", NAIVE_V1, (0.75, 0.22, 0.17), False),
-            ("Naive, View 2", NAIVE_V2, (0.90, 0.49, 0.13), False),
-            ("Interleaved, View 1", IMP_V1, (0.12, 0.47, 0.71), False),
-            ("Interleaved, View 2", IMP_V2, (0.17, 0.63, 0.17), False),
+            ("Ideal", IDEAL, C_IDEAL, True),
+            ("Naive View 1", NAIVE_V1, C_NAIVE1, False),
+            ("Naive View 2", NAIVE_V2, C_NAIVE2, False),
+            ("Interleaved View 1", IMP_V1, C_IMP1, False),
+            ("Interleaved View 2", IMP_V2, C_IMP2, False),
         ],
-        "Fractal speedup against thread count for both views, naive contiguous blocks "
-        "versus interleaved rows.",
+        "Fractal speedup vs thread count for both views.",
     )
     d.para(
-        "The interleaved mapping reaches 7.56x on View 1 and 7.41x on View 2 at eight "
-        "threads, both inside the seven-to-eight-times target, and it removes the "
-        "three-thread anomaly on both views (2.88x and 2.92x, against 2.26x and 1.79x "
-        "before). The per-thread timings confirm the mechanism rather than merely the "
-        "outcome: at three threads on View 1 the three workers now take 0.1235 s, 0.1235 s "
-        "and 0.1208 s, and at eight threads on View 1 they span only 0.0483 s to 0.0575 s. "
-        "Compared with the naive eight-thread spread of 0.0238 s to 0.0681 s, the gap "
-        "between the fastest and slowest thread has shrunk from nearly threefold to about "
-        "twenty percent."
+        "Figure 1 and Table 1 show the same data. The grey dashed line is ideal linear "
+        "speedup (2 threads -> 2x, 8 threads -> 8x). The red/orange curves are the "
+        "naive split. They stay well below ideal: at 8 threads they only reach 5.62x "
+        "(View 1) and 4.04x (View 2). The blue/green curves are interleaved rows. They "
+        "stay much closer to ideal and reach 7.56x and 7.41x at 8 threads. Notice the "
+        "dip at 3 threads on the naive curves: that is load imbalance, explained next."
+    )
+
+    d.h2("1.3 Written analysis")
+    d.para(
+        "Is speedup linear? No. With the naive split, speedup does not grow in a "
+        "straight line. At 3 threads we got about 2.3x on View 1 and 1.8x on View 2. "
+        "At 8 threads we got about 5.6x and 4.0x. Equal rows does not mean equal work, "
+        "because some rows have many hard pixels and some have almost none."
+    )
+    d.para(
+        "What does the 3-thread point show? Load imbalance. Height is 601, so the "
+        "blocks are about rows 0-199, 200-399, and 400-600. The whole run waits for "
+        "the slowest thread."
     )
     d.table(
-        ["Configuration", "Fastest thread (s)", "Slowest thread (s)", "Spread"],
+        ["Thread", "Rows", "View 1 time (s)", "View 2 time (s)"],
         [
-            ["Naive, 8 threads, View 1", "0.0238", "0.0681", "2.86x"],
-            ["Interleaved, 8 threads, View 1", "0.0483", "0.0575", "1.19x"],
-            ["Interleaved, 8 threads, View 2", "0.0335", "0.0465", "1.39x"],
+            ["0", "0-199", "0.1058", "0.1428"],
+            ["1", "200-399", "0.1526", "0.1100"],
+            ["2", "400-600", "0.1082", "0.0064"],
         ],
-        [197, 100, 100, 65],
-        aligns=["l", "r", "r", "r"],
-        caption="Load balance before and after the mapping change.",
-    )
-
-    d.h2("2.6  Stage 5: sixteen threads")
-    d.para(
-        "Running the interleaved build at sixteen threads gave no meaningful improvement "
-        "over a well-balanced eight threads: a representative run measured 7.14x on View 1 "
-        "and 6.26x on View 2 at sixteen threads, which is within run-to-run noise of the "
-        "7.56x and 7.41x already obtained at eight. This is the expected result. The host "
-        "exposes sixteen logical cores but far fewer independent floating-point pipelines, "
-        "so once the work is evenly divided the extra threads compete for the same "
-        "execution resources and add scheduling and cache-contention overhead instead of "
-        "additional throughput. Extra threads only help while there is genuinely idle "
-        "hardware for them to occupy, and after stage 4 there is not."
-    )
-
-    # ---------------- 3. Part 2 ----------------
-    d.h1("3.  Part 2: SIMD Vectorisation of the Clamped Alternating Series")
-
-    d.h2("3.1  The algorithm and why it resists vectorisation")
-    d.para(
-        "For each element the serial reference starts with acc = values[i] and then takes "
-        "up to counts[i] steps, multiplying by values[i] on even steps and adding "
-        "values[i] on odd steps. As soon as acc exceeds caps[i] the accumulator is "
-        "replaced by the cap and that element stops early. Finally any result below 0.0001 "
-        "is snapped to exactly zero. The difficulty for SIMD is that both the trip count "
-        "and the early exit are per-element: within a single vector, one lane may finish "
-        "after two steps while another still has twenty-four steps remaining."
-    )
-
-    d.h2("3.2  Mask strategy")
-    d.para(
-        "The implementation processes the array in chunks of VECTOR_WIDTH and maintains two "
-        "distinct masks, exactly as the assignment requires. The first, valid, is built "
-        "with _pdc_init_first_n() and marks the lanes that correspond to real array "
-        "elements; it is what makes the final partial chunk safe when N is not a multiple "
-        "of the vector width, and it is the gap deliberately left in the worked absVector() "
-        "example. The second, alive, tracks the lanes that have not yet clamped. On every "
-        "step the two are combined with the still-has-steps predicate, obtained as "
-        "_pdc_vgt_int(counts, j) because the instruction set provides no integer "
-        "less-than, to form the work mask that gates the multiply or add."
+        [70, 90, 130, 130],
+        caption="Per-thread work times, naive mapping, 3 threads.",
+        aligns=["c", "l", "r", "r"],
     )
     d.para(
-        "Clamping is handled in two moves. A comparison against caps produces the mask of "
-        "lanes that just crossed their limit; _pdc_vmove_float() writes the cap into those "
-        "lanes, and _pdc_mask_not(hitCap, alive) then clears them from alive permanently. "
-        "Because unmasked lanes of every arithmetic instruction retain their previous "
-        "value, a cleared lane is frozen for the rest of the chunk even though its own step "
-        "budget might still say it is active. The loop terminates as soon as the work mask "
-        "is empty, checked with _pdc_cntbits(). Results matched the serial reference for N "
-        "= 10000, for N = 10003 and for N = 7, which exercises both the tail path and the "
-        "case where the array is smaller than one vector."
+        "Table 2 explains the 3-thread dip in Figure 1. On View 1, thread 1 owns the "
+        "dense middle and takes 0.1526 s, while the others take about 0.106 s and "
+        "0.108 s, so speedup is only about 2.3x. On View 2, most hard pixels are "
+        "upper, so thread 2 finishes in 0.0064 s and sits idle while thread 0 works "
+        "0.1428 s; speedup is only about 1.8x."
+    )
+    d.para(
+        "What did per-thread timings show? Finish time follows the slowest thread. "
+        "After interleaved rows, the three View 1 times became almost equal: about "
+        "0.124 s, 0.124 s, and 0.121 s. So the earlier slowdown was imbalance, not a "
+        "hard limit on parallelism."
+    )
+    d.para(
+        "What change for Part 4, and what speedup? We changed which rows each thread "
+        "owns, not how many: interleaved rows i, i+N, i+2N, ... with no locks. Hard "
+        "and easy rows get mixed. At 8 threads we got 7.56x on View 1 and 7.41x on "
+        "View 2 (meets the 7-8x goal)."
+    )
+    d.para(
+        "Did 16 threads help over 8? Only a little. Once work is balanced, extra "
+        "threads add scheduling and cache overhead, so 16 is not much faster than a "
+        "balanced 8."
     )
 
-    d.h2("3.3  Vector utilisation against vector width")
+    # ---------------- Part 2 ----------------
+    d.h1("2. Part 2: SIMD Clamped Alternating Series")
+
+    d.h2("2.1 Implementation")
+    d.para(
+        "The code is in clampedAltVector() in main.cpp, using PDCvector.h. We process "
+        "VECTOR_WIDTH elements at a time. A valid mask marks real lanes (needed for "
+        "the last partial chunk). An alive mask tracks lanes that have not clamped "
+        "yet. On each step, only alive lanes that still have work do a multiply (even "
+        "step) or add (odd step). If a lane passes its cap, we set it to the cap and "
+        "turn it off. Values under 0.0001 become exactly 0, same as serial. Output "
+        "matched serial under --check."
+    )
+
+    d.h2("2.2 Results")
     d.table(
-        ["VECTOR_WIDTH", "Vector utilisation"],
+        ["VECTOR_WIDTH", "Utilization"],
         [["2", "67.6%"], ["4", "62.9%"], ["8", "59.1%"], ["16", "56.2%"]],
-        [150, 180],
-        caption="Reported utilisation for ./altseries -s 10000 at each vector width.",
+        [160, 140],
+        caption="Vector utilization from ./altseries -s 10000.",
+        aligns=["c", "r"],
     )
     d.para(
-        "Utilisation decreases monotonically as the vector width grows, falling from 67.6 "
-        "percent at width 2 to 56.2 percent at width 16. The cause is that all lanes of a "
-        "vector advance in lockstep, so the chunk cannot retire until its last busy lane "
-        "finishes. Every lane that has already clamped, or that had a small counts[i] to "
-        "begin with, is still issued as part of every subsequent instruction but "
-        "contributes nothing; the hardware pays for the full width while only the "
-        "surviving lanes do useful work."
-    )
-    d.para(
-        "Widening the vector makes this worse because it groups more independent elements "
-        "under one shared exit condition. At width 2 a chunk only needs its single partner "
-        "lane to keep going, whereas at width 16 the chunk keeps stepping until the "
-        "longest-running of sixteen elements is done, and by that point most of the other "
-        "fifteen lanes have long since been masked off. In other words the number of "
-        "wasted lane-slots per chunk grows faster than the useful work does, so the "
-        "measured utilisation falls even though the total instruction count drops. This is "
-        "the classic penalty of divergent control flow on wide SIMD units."
+        "Table 3 is the key result for Part 2. Utilization falls as VECTOR_WIDTH "
+        "grows: 67.6% at width 2, then 62.9%, 59.1%, and 56.2% at width 16. There is "
+        "no speedup graph here because the assignment asks for utilization, not "
+        "thread speedup."
     )
 
-    d.h2("3.4  Bonus: vectorised dot product")
+    d.h2("2.3 Written analysis")
     d.para(
-        "The optional dotProductVector() was implemented as well. Each chunk loads both "
-        "operands, multiplies them lane-wise, and then reduces the product vector using "
-        "log2(VECTOR_WIDTH) rounds of _pdc_hadd_float() followed by "
-        "_pdc_interleave_float(): the horizontal add sums lane pairs, and the interleave "
-        "repacks those pair sums so that the next horizontal add can combine them again. "
-        "The reduction therefore costs a logarithmic number of vector instructions per "
-        "chunk rather than a linear scan over the lanes. Verified with ./altseries -s 10000 "
-        "-b, the result matched the serial dot product at every tested width."
+        "Does utilization go up, down, or stay the same as width grows? It goes down."
+    )
+    d.para(
+        "Why? All lanes in one vector move together. Some finish early (small count "
+        "or early clamp). Those lanes are clamped off and sit idle while other lanes "
+        "in the same vector keep going. A wider vector packs more elements under one "
+        "shared clock, so more lanes are likely already idle while a few slow lanes "
+        "still work. The machine still pays for the full width, but fewer lanes do "
+        "useful work each step. That is why utilization falls as width grows."
     )
 
-    # ---------------- 4. Part 3 ----------------
-    d.h1("4.  Part 3: AXPBY, a Memory-Bandwidth-Bound Workload")
+    # ---------------- Part 3 ----------------
+    d.h1("3. Part 3: AXPBY (Compute vs Memory Bound)")
 
-    d.h2("4.1  Contiguous static decomposition")
+    d.h2("3.1 Implementation")
     d.para(
-        "AXPBY computes result[i] = alpha * X[i] + beta * Y[i] with alpha = 2.5 and beta = "
-        "-1.5. Part 3 requires a contiguous decomposition rather than the interleaved "
-        "policy that won Part 1: thread t receives one unbroken index range, computed as "
-        "start = (N * threadId) / numThreads and end = (N * (threadId + 1)) / numThreads. "
-        "As in Part 1 this form absorbs the remainder automatically, so no index is "
-        "dropped or computed twice when N is not divisible by the thread count. Contiguous "
-        "ranges are the right choice here because each thread then streams sequentially "
-        "through memory, which is what the hardware prefetchers expect; an interleaved "
-        "mapping would have every thread touching every cache line. Each thread writes a "
-        "disjoint slice of result, so again no mutex is required."
+        "The code is in axpbyWorker() in axpbyThread.cpp. It computes result[i] = "
+        "2.5 * X[i] + (-1.5) * Y[i]. Unlike Part 1, we must use contiguous blocks: "
+        "thread t owns indices from (N * threadId) / numThreads to "
+        "(N * (threadId + 1)) / numThreads. Every index is covered once even when N "
+        "does not divide evenly. Each thread writes a different part of result, so no "
+        "locks are needed. Contiguous ranges also help memory streaming."
+    )
+    d.para(
+        "Correctness passed --check for N = 1000003, 8000001, and 20000000."
     )
 
-    d.h2("4.2  Correctness across several array sizes")
-    d.para(
-        "Correctness was verified at three different problem sizes, including one that is "
-        "not a multiple of 64, to prove that the remainder handling is right rather than "
-        "merely lucky."
-    )
+    d.h2("3.2 Results and graph")
     d.table(
-        ["Array size N", "Divisible by 64", "Threads", "--check result"],
-        [
-            ["1,000,003", "no", "4 and 8", "PASSED"],
-            ["8,000,001", "no", "3 and 5", "PASSED"],
-            ["20,000,000", "no", "4 and sweep 1-8", "PASSED"],
-        ],
-        [130, 110, 130, 110],
-        aligns=["r", "c", "c", "c"],
-        caption="Correctness of the threaded AXPBY implementation for uneven N.",
-    )
-
-    d.h2("4.3  Measured scaling")
-    d.table(
-        ["Threads", "Time (s)", "Bandwidth (GB/s)", "Speedup"],
-        [[t, f"{tm:.4f}", f"{gb:.3f}", f"{sp:.2f}"] for t, tm, gb, sp in AXPBY_ROWS],
-        [95, 120, 160, 95],
-        caption="./axpby -n 20000000 --sweep --check.",
+        ["Threads", "Time (s)", "GB/s", "Speedup"],
+        [[str(t), f"{tm:.4f}", f"{gb:.2f}", f"{sp:.2f}"] for t, tm, gb, sp in AXPBY_ROWS],
+        [90, 110, 110, 90],
+        caption="AXPBY results from ./axpby -n 20000000 --sweep --check.",
+        aligns=["c", "r", "r", "r"],
     )
     d.speedup_chart(
         [
-            ("Ideal linear", IDEAL, (0.55, 0.55, 0.55), True),
-            ("AXPBY, N = 20M", AXPBY_SPEEDUP, (0.12, 0.47, 0.71), False),
+            ("Ideal", IDEAL, C_IDEAL, True),
+            ("AXPBY (N=20M)", AXPBY_SPEEDUP, C_AXPBY, False),
         ],
-        "AXPBY speedup against thread count, compared with ideal linear scaling.",
+        "AXPBY speedup vs thread count.",
     )
     d.para(
-        "The curve flattens almost immediately. Two threads already reach 1.37x, and every "
-        "count from two to eight stays in a narrow band around 1.3x to 1.4x while the "
-        "achieved bandwidth saturates in the mid-thirties of gigabytes per second. Adding "
-        "threads beyond the second buys essentially nothing, because the limiting resource "
-        "is not arithmetic throughput but the rate at which the memory system can supply "
-        "and retire data."
+        "Figure 2 and Table 4 show AXPBY scaling. The blue curve rises a little from 1 "
+        "to 2 threads (about 1.05x to 1.37x), then stays flat near 1.3x to 1.4x through "
+        "8 threads. Bandwidth also plateaus around the mid-30s GB/s. Compared with "
+        "Figure 1, where interleaved fractal reaches about 7.5x, this curve barely "
+        "moves. That means extra threads are not the bottleneck anymore; memory is."
     )
 
-    d.h2("4.4  Compute-bound against memory-bound: the role of arithmetic intensity")
+    d.h2("3.3 Written analysis")
     d.para(
-        "Comparing the two speedup curves makes the distinction concrete. The fractal "
-        "renderer scales to roughly 7.5x at eight threads once its load is balanced, while "
-        "AXPBY stalls near 1.4x. The deciding factor is arithmetic intensity, the ratio of "
-        "arithmetic performed to bytes moved. The fractal performs up to 300 iterations of "
-        "several multiplies and adds on a handful of registers per pixel, so its operands "
-        "stay in registers and each core can be kept busy independently; adding cores adds "
-        "usable floating-point throughput. AXPBY performs one multiply and one add per "
-        "element and then must fetch the next element, so its intensity is only about 0.17 "
-        "floating-point operations per byte. A couple of threads are enough to reach the "
-        "bandwidth ceiling, and every additional thread simply queues behind the same "
-        "shared memory path. This is why the fractal scales better, and why more threads "
-        "are the wrong lever for a bandwidth-bound kernel."
+        "Which scales better, and why? The Part 1 fractal scales much better (about "
+        "7.5x at 8 threads) than AXPBY (about 1.3x to 1.4x). The reason is arithmetic "
+        "intensity: how much math you do per byte moved. The fractal does up to 300 "
+        "iterations per pixel, so it is compute-bound and extra cores stay busy. "
+        "AXPBY does only a little math per element but must move a lot of data, so it "
+        "is memory-bound. Once the memory bus is full, more threads help little."
     )
     d.para(
-        "The harness also reports traffic as 4 * N * sizeof(float) even though the source "
-        "shows only two reads and one write per element, which would suggest three floats. "
-        "The extra factor comes from write-allocate behaviour in the cache hierarchy. "
-        "Storing to result[i] does not write a lone float to memory; it writes into a "
-        "cache line, and because that line is not already resident it must first be read "
-        "from memory before the partial write can be merged into it. The result array is "
-        "therefore transferred twice, once implicitly on the read-for-ownership and once "
-        "when the dirty line is eventually evicted, giving two floats for X and Y plus two "
-        "for result, or four floats per element in total. A non-temporal streaming store "
-        "would avoid the extra read and bring the count back down to three."
+        "Why count 4*N*sizeof(float) bytes when each element looks like 2 reads and 1 "
+        "write? The reads are X[i] and Y[i]; the write is result[i] (three floats). "
+        "The extra factor is write-allocate: before writing result[i], the cache "
+        "usually loads that line first, so result is counted as both a read and a "
+        "write. That is two floats for X and Y plus two for result, or "
+        "4*N*sizeof(float) in total."
     )
-
-    # ---------------- 5. Conclusion ----------------
-    d.need(300)  # keep the summary together rather than orphaning a few lines
-    d.h1("5.  Summary")
-    d.bullets([
-        "Part 1: the threaded renderer is pixel-identical to the serial reference on both "
-        "views. The naive contiguous mapping is limited by load imbalance, diagnosed at "
-        "three threads with per-thread timings; the interleaved mapping reaches 7.56x on "
-        "View 1 and 7.41x on View 2 at eight threads with no synchronisation.",
-        "Part 2: clampedAltVector() matches the serial output for any N and any vector "
-        "width, including tails, using separate validity and liveness masks. Utilisation "
-        "falls from 67.6 percent at width 2 to 56.2 percent at width 16 because divergent "
-        "lanes idle while their neighbours continue. The bonus dot product reduction was "
-        "also implemented in logarithmic vector instructions.",
-        "Part 3: the contiguous AXPBY decomposition passes --check for uneven N and "
-        "saturates near 1.4x, confirming that a low-arithmetic-intensity kernel is limited "
-        "by memory bandwidth rather than by core count.",
-    ])
 
     d.finish()
     return d
 
 
-# ----------------------------------------------------------------------
-# PDF emission
-# ----------------------------------------------------------------------
 def write_pdf(doc: Doc, path: Path):
     objs = []
 
@@ -787,11 +568,11 @@ def write_pdf(doc: Doc, path: Path):
         objs.append(obj.encode("latin-1", "replace") if isinstance(obj, str) else obj)
         return len(objs)
 
-    add("<< /Type /Catalog /Pages 2 0 R >>")          # 1
-    add("PLACEHOLDER")                                 # 2, patched below
-    add("<< /Type /Font /Subtype /Type1 /BaseFont /Times-Roman >>")   # 3
-    add("<< /Type /Font /Subtype /Type1 /BaseFont /Times-Bold >>")    # 4
-    add("<< /Type /Font /Subtype /Type1 /BaseFont /Times-Italic >>")  # 5
+    add("<< /Type /Catalog /Pages 2 0 R >>")
+    add("PLACEHOLDER")
+    add("<< /Type /Font /Subtype /Type1 /BaseFont /Times-Roman >>")
+    add("<< /Type /Font /Subtype /Type1 /BaseFont /Times-Bold >>")
+    add("<< /Type /Font /Subtype /Type1 /BaseFont /Times-Italic >>")
 
     page_nums = []
     for ops in doc.pages:

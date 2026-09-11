@@ -1,18 +1,5 @@
-Part 2: Clamped Alternating Series (under half a page)
+Does utilization increase, decrease, or stay the same as width grows?
+It decreases. With ./altseries -s 10000, utilization was about 67.6% at width 2, 62.9% at width 4, 59.1% at width 8, and 56.2% at width 16.
 
-We vectorized the serial loop with fake SIMD ops in PDCvector.h. Each vector step works on VECTOR_WIDTH elements at once. Masks turn lanes on/off: when a lane hits its cap early, we freeze it so it does not keep changing while other lanes still run.
-
-Vector utilization (-s 10000):
-
-| VECTOR_WIDTH | Utilization |
-|-------------:|------------:|
-| 2 | 67.6% |
-| 4 | 62.9% |
-| 8 | 59.1% |
-| 16 | 56.2% |
-
-Does utilization go up, down, or stay the same as width grows? It goes **down**.
-
-Why (simple words): lanes in one vector must stay in lockstep. Some finish early (short counts or clamp). Those lanes sit idle (“clamped off”) while other lanes in the same vector keep going. A wider vector packs more elements together, so on average more lanes waste time idle waiting for the slowest busy lane. So utilization falls as width grows.
-
-Bonus: `dotProductVector()` multiplies chunks, then folds each chunk with `_pdc_hadd_float` + `_pdc_interleave_float` in O(log W) steps (not O(N)). Tested with `-b`; results matched.
+Why?
+All lanes in one vector step together. Some lanes finish early because their count is small or they hit the cap. Those lanes get clamped off and sit idle, while other lanes in the same vector keep going. In a wider vector, more elements share that same lockstep clock, so more lanes are likely to already be clamped off while a few slow lanes are still working. The hardware still pays for the full width, but fewer lanes do useful work on each step. That is why utilization falls as width grows.

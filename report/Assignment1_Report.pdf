@@ -4,7 +4,7 @@
 << /Type /Catalog /Pages 2 0 R >>
 endobj
 2 0 obj
-<< /Type /Pages /Kids [7 0 R 9 0 R 11 0 R 13 0 R 15 0 R 17 0 R 19 0 R] /Count 7 >>
+<< /Type /Pages /Kids [7 0 R 9 0 R 11 0 R 13 0 R] /Count 4 >>
 endobj
 3 0 obj
 << /Type /Font /Subtype /Type1 /BaseFont /Times-Roman >>
@@ -16,757 +16,480 @@ endobj
 << /Type /Font /Subtype /Type1 /BaseFont /Times-Italic >>
 endobj
 6 0 obj
-<< /Length 6109 >>
+<< /Length 4813 >>
 stream
-BT /F1 11.00 Tf 1 0 0 1 171.76 773.89 Tm (National University of Computer and Emerging Sciences) Tj ET
-BT /F1 11.00 Tf 1 0 0 1 196.95 758.89 Tm (CS3006 - Parallel and Distributed Computing) Tj ET
-BT /F2 16.00 Tf 1 0 0 1 129.87 737.89 Tm (Assignment 1: Multi-Core and SIMD Parallelism) Tj ET
-BT /F3 10.50 Tf 1 0 0 1 188.07 717.89 Tm (Saad  |  Roll Number: <roll number>  |  BS\(CS\)-7G) Tj ET
-q 0.20 G 0.90 w 64.00 705.89 m 531.28 705.89 l S Q
-BT /F2 13.50 Tf 1 0 0 1 64.00 681.89 Tm (1.  Overview and Test Setup) Tj ET
-q 0.45 G 0.70 w 64.00 675.89 m 531.28 675.89 l S Q
-BT 1.952 Tw /F1 10.50 Tf 1 0 0 1 64.00 660.89 Tm (This report covers all three programs of Assignment 1. Part 1 parallelises a compute-bound cubic fractal) Tj ET
+BT /F1 11.00 Tf 1 0 0 1 171.76 769.89 Tm (National University of Computer and Emerging Sciences) Tj ET
+BT /F1 11.00 Tf 1 0 0 1 196.95 752.89 Tm (CS3006 - Parallel and Distributed Computing) Tj ET
+BT /F2 14.00 Tf 1 0 0 1 234.64 735.89 Tm (Assignment 1 Report) Tj ET
+BT /F1 11.00 Tf 1 0 0 1 244.76 715.89 Tm (Afnan Asif  |  23L-0709) Tj ET
+q 0.000 0.000 0.000 RG 1.00 w 72.00 694.89 m 523.28 694.89 l S Q
+BT /F2 12.50 Tf 1 0 0 1 72.00 674.89 Tm (1. Part 1: Parallel Fractal Rendering) Tj ET
+BT /F2 11.00 Tf 1 0 0 1 72.00 658.89 Tm (1.1 Implementation) Tj ET
+BT 0.198 Tw /F1 11.00 Tf 1 0 0 1 72.00 644.89 Tm (The code is in fractalWorker\(\) in fractalThread.cpp. We draw a 900x601 fractal. Each pixel maps to a) Tj ET
 BT 0 Tw ET
-BT 0.208 Tw /F1 10.50 Tf 1 0 0 1 64.00 646.39 Tm (renderer across threads, Part 2 vectorises an irregular scalar loop against the simulated SIMD instruction set in) Tj ET
+BT 0.759 Tw /F1 11.00 Tf 1 0 0 1 72.00 630.89 Tm (complex number c and runs z <- z^3 + c up to 300 times. Hard pixels need more math. Each thread) Tj ET
 BT 0 Tw ET
-BT 1.917 Tw /F1 10.50 Tf 1 0 0 1 64.00 631.89 Tm (PDCvector.h, and Part 3 parallelises the memory-bandwidth-bound AXPBY kernel. Every number quoted) Tj ET
+BT /F1 11.00 Tf 1 0 0 1 72.00 616.89 Tm (owns different rows, so no locks are needed.) Tj ET
+BT 2.938 Tw /F1 11.00 Tf 1 0 0 1 72.00 598.89 Tm (Naive mapping: each thread gets one block of rows. We set startRow = \(height * threadId\) /) Tj ET
 BT 0 Tw ET
-BT 1.117 Tw /F1 10.50 Tf 1 0 0 1 64.00 617.39 Tm (below was measured on the machine described in this section, using the timing harnesses supplied with the) Tj ET
+BT 1.406 Tw /F1 11.00 Tf 1 0 0 1 72.00 584.89 Tm (numThreads and endRow = \(height * \(threadId + 1\)\) / numThreads so every row is covered once,) Tj ET
 BT 0 Tw ET
-BT /F1 10.50 Tf 1 0 0 1 64.00 602.89 Tm (starter code.) Tj ET
-BT 0.072 Tw /F1 10.50 Tf 1 0 0 1 64.00 584.39 Tm (All measurements were taken on a 16-logical-core x86-64 machine running Linux under WSL2. Each program) Tj ET
+BT 5.481 Tw /F1 11.00 Tf 1 0 0 1 72.00 570.89 Tm (even when 601 does not divide evenly. Each thread also stores its own work time in) Tj ET
 BT 0 Tw ET
-BT 2.168 Tw /F1 10.50 Tf 1 0 0 1 64.00 569.89 Tm (was compiled at -O2 with C++11/C++17 and linked against pthreads, exactly as the provided Makefiles) Tj ET
+BT /F1 11.00 Tf 1 0 0 1 72.00 556.89 Tm (threadTimes[threadId].) Tj ET
+BT 1.753 Tw /F1 11.00 Tf 1 0 0 1 72.00 538.89 Tm (Better mapping: thread i takes every Nth row \(i, i+N, i+2N, ...\). That mixes hard and easy rows.) Tj ET
 BT 0 Tw ET
-BT 0.847 Tw /F1 10.50 Tf 1 0 0 1 64.00 555.39 Tm (specify. Because wall-clock timing is noisy, every sweep was repeated several times and the best \(or clearly) Tj ET
+BT 0.155 Tw /F1 11.00 Tf 1 0 0 1 72.00 524.89 Tm (FRACTAL_INTERLEAVE chooses the policy \(0 = naive, 1 = interleaved\). We checked with ./fractal) Tj ET
 BT 0 Tw ET
-BT 1.260 Tw /F1 10.50 Tf 1 0 0 1 64.00 540.89 Tm (typical\) run was recorded, as the assignment tips recommend. Correctness was re-checked with the --check) Tj ET
-BT 0 Tw ET
-BT 2.468 Tw /F1 10.50 Tf 1 0 0 1 64.00 526.39 Tm (flag after every code change; no timing result is reported for a configuration that did not first pass its) Tj ET
-BT 0 Tw ET
-BT /F1 10.50 Tf 1 0 0 1 64.00 511.89 Tm (correctness test.) Tj ET
-BT /F1 10.50 Tf 1 0 0 1 70.00 493.39 Tm (-) Tj ET
-BT /F1 10.50 Tf 1 0 0 1 82.00 493.39 Tm (Part 1: ./fractal -t N, --view 1|2, --sweep, --check \(900x601 image, maxIterations = 300\).) Tj ET
-BT /F1 10.50 Tf 1 0 0 1 70.00 474.89 Tm (-) Tj ET
-BT /F1 10.50 Tf 1 0 0 1 82.00 474.89 Tm (Part 2: ./altseries -s N, -b for the bonus, with VECTOR_WIDTH set to 2, 4, 8 and 16 at compile time.) Tj ET
-BT /F1 10.50 Tf 1 0 0 1 70.00 456.39 Tm (-) Tj ET
-BT /F1 10.50 Tf 1 0 0 1 82.00 456.39 Tm (Part 3: ./axpby -n N, -t N, --sweep, --check \(alpha = 2.5, beta = -1.5\).) Tj ET
-BT /F2 13.50 Tf 1 0 0 1 64.00 431.89 Tm (2.  Part 1: Parallel Fractal Rendering with Threads) Tj ET
-q 0.45 G 0.70 w 64.00 425.89 m 531.28 425.89 l S Q
-BT /F2 11.50 Tf 1 0 0 1 64.00 407.89 Tm (2.1  Workload and why no synchronisation is needed) Tj ET
-BT 0.345 Tw /F1 10.50 Tf 1 0 0 1 64.00 392.89 Tm (The renderer walks a 900x601 grid of pixels. Each pixel is mapped to a complex number c and the recurrence) Tj ET
-BT 0 Tw ET
-BT 1.803 Tw /F1 10.50 Tf 1 0 0 1 64.00 378.39 Tm (z <- z^3 + c is iterated until the magnitude escapes a fixed radius or until the iteration budget of 300 is) Tj ET
-BT 0 Tw ET
-BT 0.056 Tw /F1 10.50 Tf 1 0 0 1 64.00 363.89 Tm (exhausted. The returned iteration count is the pixel value, so bright pixels are literally the pixels that consumed) Tj ET
-BT 0 Tw ET
-BT 2.210 Tw /F1 10.50 Tf 1 0 0 1 64.00 349.39 Tm (the most arithmetic. This makes the workload compute-bound, but it also makes the cost per pixel, and) Tj ET
-BT 0 Tw ET
-BT /F1 10.50 Tf 1 0 0 1 64.00 334.89 Tm (therefore the cost per image row, highly non-uniform.) Tj ET
-BT 0.264 Tw /F1 10.50 Tf 1 0 0 1 64.00 316.39 Tm (The parallel decomposition assigns whole rows to threads. Because a row is owned by exactly one thread, and) Tj ET
-BT 0 Tw ET
-BT 1.551 Tw /F1 10.50 Tf 1 0 0 1 64.00 301.89 Tm (the output buffer is indexed as output[row * width + col], no two threads ever write to the same address.) Tj ET
-BT 0 Tw ET
-BT 0.550 Tw /F1 10.50 Tf 1 0 0 1 64.00 287.39 Tm (Disjoint ownership removes the data race entirely, which is why the implementation needs no mutex, atomic,) Tj ET
-BT 0 Tw ET
-BT 0.593 Tw /F1 10.50 Tf 1 0 0 1 64.00 272.89 Tm (or barrier of any kind. All student code lives in fractalWorker\(\); the supplied fractalThread\(\) spawns workers) Tj ET
-BT 0 Tw ET
-BT /F1 10.50 Tf 1 0 0 1 64.00 258.39 Tm (1..N-1, runs worker 0 on the calling thread, and then joins.) Tj ET
-BT /F2 11.50 Tf 1 0 0 1 64.00 236.89 Tm (2.2  Stage 1: two-thread spatial decomposition) Tj ET
-BT 0.267 Tw /F1 10.50 Tf 1 0 0 1 64.00 221.89 Tm (The first stage splits the image into two horizontal halves: thread 0 renders rows 0 to 299 and thread 1 renders) Tj ET
-BT 0 Tw ET
-BT 0.157 Tw /F1 10.50 Tf 1 0 0 1 64.00 207.39 Tm (rows 300 to 600. Note that the height, 601, is odd, so the two halves are deliberately unequal in size \(300 rows) Tj ET
-BT 0 Tw ET
-BT 0.153 Tw /F1 10.50 Tf 1 0 0 1 64.00 192.89 Tm (against 301 rows\) rather than dropping the middle row. Running ./fractal -t 2 --check reported a pixel-identical) Tj ET
-BT 0 Tw ET
-BT 0.590 Tw /F1 10.50 Tf 1 0 0 1 64.00 178.39 Tm (result against the serial reference and a speedup of 2.01x on View 1, confirming that the threading path itself) Tj ET
-BT 0 Tw ET
-BT /F1 10.50 Tf 1 0 0 1 64.00 163.89 Tm (was sound before any load-balancing work began.) Tj ET
-BT /F2 11.50 Tf 1 0 0 1 64.00 142.39 Tm (2.3  Stage 2: contiguous blocks for one to eight threads) Tj ET
-BT 1.413 Tw /F1 10.50 Tf 1 0 0 1 64.00 127.39 Tm (The two-half split generalises to any thread count by giving each thread one unbroken block of rows. The) Tj ET
-BT 0 Tw ET
-BT 1.818 Tw /F1 10.50 Tf 1 0 0 1 64.00 112.89 Tm (block boundaries are computed as startRow = \(height * threadId\) / numThreads and endRow = \(height *) Tj ET
-BT 0 Tw ET
-BT /F1 9.00 Tf 1 0 0 1 295.39 38.00 Tm (1) Tj ET
+BT /F1 11.00 Tf 1 0 0 1 72.00 510.89 Tm (--sweep --check on both views.) Tj ET
+BT /F2 11.00 Tf 1 0 0 1 72.00 492.89 Tm (1.2 Results and graph) Tj ET
+BT /F3 10.00 Tf 1 0 0 1 72.00 478.89 Tm (Table 1. Fractal speedup from ./fractal --sweep --check.) Tj ET
+q 0.000 0.000 0.000 RG 0.90 w 72.00 472.89 m 532.00 472.89 l S Q
+BT /F2 10.00 Tf 1 0 0 1 89.22 462.89 Tm (Threads) Tj ET
+BT /F2 10.00 Tf 1 0 0 1 166.90 462.89 Tm (Naive View 1) Tj ET
+BT /F2 10.00 Tf 1 0 0 1 251.90 462.89 Tm (Naive View 2) Tj ET
+BT /F2 10.00 Tf 1 0 0 1 337.46 462.89 Tm (Interleaved View 1) Tj ET
+BT /F2 10.00 Tf 1 0 0 1 447.46 462.89 Tm (Interleaved View 2) Tj ET
+q 0.000 0.000 0.000 RG 0.60 w 72.00 458.89 m 532.00 458.89 l S Q
+BT /F1 10.00 Tf 1 0 0 1 104.50 448.89 Tm (1) Tj ET
+BT /F1 10.00 Tf 1 0 0 1 205.50 448.89 Tm (0.99) Tj ET
+BT /F1 10.00 Tf 1 0 0 1 290.50 448.89 Tm (1.00) Tj ET
+BT /F1 10.00 Tf 1 0 0 1 400.50 448.89 Tm (0.99) Tj ET
+BT /F1 10.00 Tf 1 0 0 1 510.50 448.89 Tm (1.01) Tj ET
+BT /F1 10.00 Tf 1 0 0 1 104.50 434.89 Tm (2) Tj ET
+BT /F1 10.00 Tf 1 0 0 1 205.50 434.89 Tm (1.96) Tj ET
+BT /F1 10.00 Tf 1 0 0 1 290.50 434.89 Tm (1.16) Tj ET
+BT /F1 10.00 Tf 1 0 0 1 400.50 434.89 Tm (1.95) Tj ET
+BT /F1 10.00 Tf 1 0 0 1 510.50 434.89 Tm (2.00) Tj ET
+BT /F1 10.00 Tf 1 0 0 1 104.50 420.89 Tm (3) Tj ET
+BT /F1 10.00 Tf 1 0 0 1 205.50 420.89 Tm (2.26) Tj ET
+BT /F1 10.00 Tf 1 0 0 1 290.50 420.89 Tm (1.79) Tj ET
+BT /F1 10.00 Tf 1 0 0 1 400.50 420.89 Tm (2.88) Tj ET
+BT /F1 10.00 Tf 1 0 0 1 510.50 420.89 Tm (2.92) Tj ET
+BT /F1 10.00 Tf 1 0 0 1 104.50 406.89 Tm (4) Tj ET
+BT /F1 10.00 Tf 1 0 0 1 205.50 406.89 Tm (2.97) Tj ET
+BT /F1 10.00 Tf 1 0 0 1 290.50 406.89 Tm (2.20) Tj ET
+BT /F1 10.00 Tf 1 0 0 1 400.50 406.89 Tm (3.81) Tj ET
+BT /F1 10.00 Tf 1 0 0 1 510.50 406.89 Tm (3.80) Tj ET
+BT /F1 10.00 Tf 1 0 0 1 104.50 392.89 Tm (5) Tj ET
+BT /F1 10.00 Tf 1 0 0 1 205.50 392.89 Tm (2.92) Tj ET
+BT /F1 10.00 Tf 1 0 0 1 290.50 392.89 Tm (2.74) Tj ET
+BT /F1 10.00 Tf 1 0 0 1 400.50 392.89 Tm (4.70) Tj ET
+BT /F1 10.00 Tf 1 0 0 1 510.50 392.89 Tm (4.53) Tj ET
+BT /F1 10.00 Tf 1 0 0 1 104.50 378.89 Tm (6) Tj ET
+BT /F1 10.00 Tf 1 0 0 1 205.50 378.89 Tm (4.40) Tj ET
+BT /F1 10.00 Tf 1 0 0 1 290.50 378.89 Tm (3.28) Tj ET
+BT /F1 10.00 Tf 1 0 0 1 400.50 378.89 Tm (5.63) Tj ET
+BT /F1 10.00 Tf 1 0 0 1 510.50 378.89 Tm (5.68) Tj ET
+BT /F1 10.00 Tf 1 0 0 1 104.50 364.89 Tm (7) Tj ET
+BT /F1 10.00 Tf 1 0 0 1 205.50 364.89 Tm (5.11) Tj ET
+BT /F1 10.00 Tf 1 0 0 1 290.50 364.89 Tm (3.43) Tj ET
+BT /F1 10.00 Tf 1 0 0 1 400.50 364.89 Tm (5.45) Tj ET
+BT /F1 10.00 Tf 1 0 0 1 510.50 364.89 Tm (5.37) Tj ET
+BT /F1 10.00 Tf 1 0 0 1 104.50 350.89 Tm (8) Tj ET
+BT /F1 10.00 Tf 1 0 0 1 205.50 350.89 Tm (5.62) Tj ET
+BT /F1 10.00 Tf 1 0 0 1 290.50 350.89 Tm (4.04) Tj ET
+BT /F1 10.00 Tf 1 0 0 1 400.50 350.89 Tm (7.56) Tj ET
+BT /F1 10.00 Tf 1 0 0 1 510.50 350.89 Tm (7.41) Tj ET
+q 0.000 0.000 0.000 RG 0.90 w 72.00 346.89 m 532.00 346.89 l S Q
+BT /F1 10.00 Tf 1 0 0 1 295.14 44.00 Tm (1) Tj ET
 endstream
 endobj
 7 0 obj
 << /Type /Page /Parent 2 0 R /MediaBox [0 0 595.28 841.89] /Contents 6 0 R /Resources << /Font << /F1 3 0 R /F2 4 0 R /F3 5 0 R >> >> >>
 endobj
 8 0 obj
-<< /Length 7551 >>
+<< /Length 17393 >>
 stream
-BT 0.978 Tw /F1 10.50 Tf 1 0 0 1 64.00 777.89 Tm (\(threadId + 1\)\) / numThreads. This multiply-then-divide form is important: it distributes the remainder rows) Tj ET
+q 0.750 0.750 0.750 RG 0.35 w [1 3] 0 d 102.00 579.89 m 513.28 579.89 l S Q
+BT /F1 9.00 Tf 1 0 0 1 91.50 576.89 Tm (0) Tj ET
+q 0.750 0.750 0.750 RG 0.35 w [1 3] 0 d 102.00 602.24 m 513.28 602.24 l S Q
+BT /F1 9.00 Tf 1 0 0 1 91.50 599.24 Tm (1) Tj ET
+q 0.750 0.750 0.750 RG 0.35 w [1 3] 0 d 102.00 624.60 m 513.28 624.60 l S Q
+BT /F1 9.00 Tf 1 0 0 1 91.50 621.60 Tm (2) Tj ET
+q 0.750 0.750 0.750 RG 0.35 w [1 3] 0 d 102.00 646.95 m 513.28 646.95 l S Q
+BT /F1 9.00 Tf 1 0 0 1 91.50 643.95 Tm (3) Tj ET
+q 0.750 0.750 0.750 RG 0.35 w [1 3] 0 d 102.00 669.30 m 513.28 669.30 l S Q
+BT /F1 9.00 Tf 1 0 0 1 91.50 666.30 Tm (4) Tj ET
+q 0.750 0.750 0.750 RG 0.35 w [1 3] 0 d 102.00 691.65 m 513.28 691.65 l S Q
+BT /F1 9.00 Tf 1 0 0 1 91.50 688.65 Tm (5) Tj ET
+q 0.750 0.750 0.750 RG 0.35 w [1 3] 0 d 102.00 714.01 m 513.28 714.01 l S Q
+BT /F1 9.00 Tf 1 0 0 1 91.50 711.01 Tm (6) Tj ET
+q 0.750 0.750 0.750 RG 0.35 w [1 3] 0 d 102.00 736.36 m 513.28 736.36 l S Q
+BT /F1 9.00 Tf 1 0 0 1 91.50 733.36 Tm (7) Tj ET
+q 0.750 0.750 0.750 RG 0.35 w [1 3] 0 d 102.00 758.71 m 513.28 758.71 l S Q
+BT /F1 9.00 Tf 1 0 0 1 91.50 755.71 Tm (8) Tj ET
+BT /F1 9.00 Tf 1 0 0 1 99.75 567.89 Tm (1) Tj ET
+BT /F1 9.00 Tf 1 0 0 1 158.50 567.89 Tm (2) Tj ET
+BT /F1 9.00 Tf 1 0 0 1 217.26 567.89 Tm (3) Tj ET
+BT /F1 9.00 Tf 1 0 0 1 276.01 567.89 Tm (4) Tj ET
+BT /F1 9.00 Tf 1 0 0 1 334.76 567.89 Tm (5) Tj ET
+BT /F1 9.00 Tf 1 0 0 1 393.52 567.89 Tm (6) Tj ET
+BT /F1 9.00 Tf 1 0 0 1 452.27 567.89 Tm (7) Tj ET
+BT /F1 9.00 Tf 1 0 0 1 511.03 567.89 Tm (8) Tj ET
+q 0.000 0.000 0.000 RG 1.00 w 102.00 579.89 m 102.00 769.89 l S Q
+q 0.000 0.000 0.000 RG 1.00 w 102.00 579.89 m 513.28 579.89 l S Q
+BT /F1 10.00 Tf 1 0 0 1 270.15 553.89 Tm (Number of threads) Tj ET
+BT /F1 10.00 Tf 0 1 -1 0 72.00 657.67 Tm (Speedup) Tj ET
+q 0.550 0.550 0.550 RG 1.15 w [5 3] 0 d 102.00 602.24 m 160.75 624.60 l S Q
+q 0.550 0.550 0.550 RG 1.15 w [5 3] 0 d 160.75 624.60 m 219.51 646.95 l S Q
+q 0.550 0.550 0.550 RG 1.15 w [5 3] 0 d 219.51 646.95 m 278.26 669.30 l S Q
+q 0.550 0.550 0.550 RG 1.15 w [5 3] 0 d 278.26 669.30 m 337.01 691.65 l S Q
+q 0.550 0.550 0.550 RG 1.15 w [5 3] 0 d 337.01 691.65 m 395.77 714.01 l S Q
+q 0.550 0.550 0.550 RG 1.15 w [5 3] 0 d 395.77 714.01 m 454.52 736.36 l S Q
+q 0.550 0.550 0.550 RG 1.15 w [5 3] 0 d 454.52 736.36 m 513.28 758.71 l S Q
+q 0.750 0.220 0.170 RG 1.35 w 102.00 602.02 m 160.75 623.70 l S Q
+q 0.750 0.220 0.170 RG 1.35 w 160.75 623.70 m 219.51 630.41 l S Q
+q 0.750 0.220 0.170 RG 1.35 w 219.51 630.41 m 278.26 646.28 l S Q
+q 0.750 0.220 0.170 RG 1.35 w 278.26 646.28 m 337.01 645.16 l S Q
+q 0.750 0.220 0.170 RG 1.35 w 337.01 645.16 m 395.77 678.24 l S Q
+q 0.750 0.220 0.170 RG 1.35 w 395.77 678.24 m 454.52 694.11 l S Q
+q 0.750 0.220 0.170 RG 1.35 w 454.52 694.11 m 513.28 705.51 l S Q
+q 0.750 0.220 0.170 rg 104.30 602.02 m 104.30 603.29 103.27 604.32 102.00 604.32 c 100.73 604.32 99.70 603.29 99.70 602.02 c 99.70 600.75 100.73 599.72 102.00 599.72 c 103.27 599.72 104.30 600.75 104.30 602.02 c f Q
+q 0.750 0.220 0.170 rg 163.05 623.70 m 163.05 624.97 162.02 626.00 160.75 626.00 c 159.48 626.00 158.45 624.97 158.45 623.70 c 158.45 622.43 159.48 621.40 160.75 621.40 c 162.02 621.40 163.05 622.43 163.05 623.70 c f Q
+q 0.750 0.220 0.170 rg 221.81 630.41 m 221.81 631.68 220.78 632.71 219.51 632.71 c 218.24 632.71 217.21 631.68 217.21 630.41 c 217.21 629.14 218.24 628.11 219.51 628.11 c 220.78 628.11 221.81 629.14 221.81 630.41 c f Q
+q 0.750 0.220 0.170 rg 280.56 646.28 m 280.56 647.55 279.53 648.58 278.26 648.58 c 276.99 648.58 275.96 647.55 275.96 646.28 c 275.96 645.01 276.99 643.98 278.26 643.98 c 279.53 643.98 280.56 645.01 280.56 646.28 c f Q
+q 0.750 0.220 0.170 rg 339.31 645.16 m 339.31 646.43 338.29 647.46 337.01 647.46 c 335.74 647.46 334.71 646.43 334.71 645.16 c 334.71 643.89 335.74 642.86 337.01 642.86 c 338.29 642.86 339.31 643.89 339.31 645.16 c f Q
+q 0.750 0.220 0.170 rg 398.07 678.24 m 398.07 679.51 397.04 680.54 395.77 680.54 c 394.50 680.54 393.47 679.51 393.47 678.24 c 393.47 676.97 394.50 675.94 395.77 675.94 c 397.04 675.94 398.07 676.97 398.07 678.24 c f Q
+q 0.750 0.220 0.170 rg 456.82 694.11 m 456.82 695.38 455.79 696.41 454.52 696.41 c 453.25 696.41 452.22 695.38 452.22 694.11 c 452.22 692.84 453.25 691.81 454.52 691.81 c 455.79 691.81 456.82 692.84 456.82 694.11 c f Q
+q 0.750 0.220 0.170 rg 515.58 705.51 m 515.58 706.78 514.55 707.81 513.28 707.81 c 512.01 707.81 510.98 706.78 510.98 705.51 c 510.98 704.24 512.01 703.21 513.28 703.21 c 514.55 703.21 515.58 704.24 515.58 705.51 c f Q
+q 0.900 0.490 0.130 RG 1.35 w 102.00 602.24 m 160.75 605.82 l S Q
+q 0.900 0.490 0.130 RG 1.35 w 160.75 605.82 m 219.51 619.90 l S Q
+q 0.900 0.490 0.130 RG 1.35 w 219.51 619.90 m 278.26 629.07 l S Q
+q 0.900 0.490 0.130 RG 1.35 w 278.26 629.07 m 337.01 641.14 l S Q
+q 0.900 0.490 0.130 RG 1.35 w 337.01 641.14 m 395.77 653.21 l S Q
+q 0.900 0.490 0.130 RG 1.35 w 395.77 653.21 m 454.52 656.56 l S Q
+q 0.900 0.490 0.130 RG 1.35 w 454.52 656.56 m 513.28 670.20 l S Q
+q 0.900 0.490 0.130 rg 104.30 602.24 m 104.30 603.51 103.27 604.54 102.00 604.54 c 100.73 604.54 99.70 603.51 99.70 602.24 c 99.70 600.97 100.73 599.94 102.00 599.94 c 103.27 599.94 104.30 600.97 104.30 602.24 c f Q
+q 0.900 0.490 0.130 rg 163.05 605.82 m 163.05 607.09 162.02 608.12 160.75 608.12 c 159.48 608.12 158.45 607.09 158.45 605.82 c 158.45 604.55 159.48 603.52 160.75 603.52 c 162.02 603.52 163.05 604.55 163.05 605.82 c f Q
+q 0.900 0.490 0.130 rg 221.81 619.90 m 221.81 621.17 220.78 622.20 219.51 622.20 c 218.24 622.20 217.21 621.17 217.21 619.90 c 217.21 618.63 218.24 617.60 219.51 617.60 c 220.78 617.60 221.81 618.63 221.81 619.90 c f Q
+q 0.900 0.490 0.130 rg 280.56 629.07 m 280.56 630.34 279.53 631.37 278.26 631.37 c 276.99 631.37 275.96 630.34 275.96 629.07 c 275.96 627.80 276.99 626.77 278.26 626.77 c 279.53 626.77 280.56 627.80 280.56 629.07 c f Q
+q 0.900 0.490 0.130 rg 339.31 641.14 m 339.31 642.41 338.29 643.44 337.01 643.44 c 335.74 643.44 334.71 642.41 334.71 641.14 c 334.71 639.87 335.74 638.84 337.01 638.84 c 338.29 638.84 339.31 639.87 339.31 641.14 c f Q
+q 0.900 0.490 0.130 rg 398.07 653.21 m 398.07 654.48 397.04 655.51 395.77 655.51 c 394.50 655.51 393.47 654.48 393.47 653.21 c 393.47 651.94 394.50 650.91 395.77 650.91 c 397.04 650.91 398.07 651.94 398.07 653.21 c f Q
+q 0.900 0.490 0.130 rg 456.82 656.56 m 456.82 657.83 455.79 658.86 454.52 658.86 c 453.25 658.86 452.22 657.83 452.22 656.56 c 452.22 655.29 453.25 654.26 454.52 654.26 c 455.79 654.26 456.82 655.29 456.82 656.56 c f Q
+q 0.900 0.490 0.130 rg 515.58 670.20 m 515.58 671.47 514.55 672.50 513.28 672.50 c 512.01 672.50 510.98 671.47 510.98 670.20 c 510.98 668.93 512.01 667.90 513.28 667.90 c 514.55 667.90 515.58 668.93 515.58 670.20 c f Q
+q 0.120 0.470 0.710 RG 1.35 w 102.00 602.02 m 160.75 623.48 l S Q
+q 0.120 0.470 0.710 RG 1.35 w 160.75 623.48 m 219.51 644.27 l S Q
+q 0.120 0.470 0.710 RG 1.35 w 219.51 644.27 m 278.26 665.05 l S Q
+q 0.120 0.470 0.710 RG 1.35 w 278.26 665.05 m 337.01 684.95 l S Q
+q 0.120 0.470 0.710 RG 1.35 w 337.01 684.95 m 395.77 705.74 l S Q
+q 0.120 0.470 0.710 RG 1.35 w 395.77 705.74 m 454.52 701.71 l S Q
+q 0.120 0.470 0.710 RG 1.35 w 454.52 701.71 m 513.28 748.88 l S Q
+q 0.120 0.470 0.710 rg 104.30 602.02 m 104.30 603.29 103.27 604.32 102.00 604.32 c 100.73 604.32 99.70 603.29 99.70 602.02 c 99.70 600.75 100.73 599.72 102.00 599.72 c 103.27 599.72 104.30 600.75 104.30 602.02 c f Q
+q 0.120 0.470 0.710 rg 163.05 623.48 m 163.05 624.75 162.02 625.78 160.75 625.78 c 159.48 625.78 158.45 624.75 158.45 623.48 c 158.45 622.21 159.48 621.18 160.75 621.18 c 162.02 621.18 163.05 622.21 163.05 623.48 c f Q
+q 0.120 0.470 0.710 rg 221.81 644.27 m 221.81 645.54 220.78 646.57 219.51 646.57 c 218.24 646.57 217.21 645.54 217.21 644.27 c 217.21 643.00 218.24 641.97 219.51 641.97 c 220.78 641.97 221.81 643.00 221.81 644.27 c f Q
+q 0.120 0.470 0.710 rg 280.56 665.05 m 280.56 666.32 279.53 667.35 278.26 667.35 c 276.99 667.35 275.96 666.32 275.96 665.05 c 275.96 663.78 276.99 662.75 278.26 662.75 c 279.53 662.75 280.56 663.78 280.56 665.05 c f Q
+q 0.120 0.470 0.710 rg 339.31 684.95 m 339.31 686.22 338.29 687.25 337.01 687.25 c 335.74 687.25 334.71 686.22 334.71 684.95 c 334.71 683.68 335.74 682.65 337.01 682.65 c 338.29 682.65 339.31 683.68 339.31 684.95 c f Q
+q 0.120 0.470 0.710 rg 398.07 705.74 m 398.07 707.01 397.04 708.04 395.77 708.04 c 394.50 708.04 393.47 707.01 393.47 705.74 c 393.47 704.47 394.50 703.44 395.77 703.44 c 397.04 703.44 398.07 704.47 398.07 705.74 c f Q
+q 0.120 0.470 0.710 rg 456.82 701.71 m 456.82 702.98 455.79 704.01 454.52 704.01 c 453.25 704.01 452.22 702.98 452.22 701.71 c 452.22 700.44 453.25 699.41 454.52 699.41 c 455.79 699.41 456.82 700.44 456.82 701.71 c f Q
+q 0.120 0.470 0.710 rg 515.58 748.88 m 515.58 750.15 514.55 751.18 513.28 751.18 c 512.01 751.18 510.98 750.15 510.98 748.88 c 510.98 747.61 512.01 746.58 513.28 746.58 c 514.55 746.58 515.58 747.61 515.58 748.88 c f Q
+q 0.170 0.630 0.170 RG 1.35 w 102.00 602.47 m 160.75 624.60 l S Q
+q 0.170 0.630 0.170 RG 1.35 w 160.75 624.60 m 219.51 645.16 l S Q
+q 0.170 0.630 0.170 RG 1.35 w 219.51 645.16 m 278.26 664.83 l S Q
+q 0.170 0.630 0.170 RG 1.35 w 278.26 664.83 m 337.01 681.15 l S Q
+q 0.170 0.630 0.170 RG 1.35 w 337.01 681.15 m 395.77 706.85 l S Q
+q 0.170 0.630 0.170 RG 1.35 w 395.77 706.85 m 454.52 699.93 l S Q
+q 0.170 0.630 0.170 RG 1.35 w 454.52 699.93 m 513.28 745.53 l S Q
+q 0.170 0.630 0.170 rg 104.30 602.47 m 104.30 603.74 103.27 604.77 102.00 604.77 c 100.73 604.77 99.70 603.74 99.70 602.47 c 99.70 601.20 100.73 600.17 102.00 600.17 c 103.27 600.17 104.30 601.20 104.30 602.47 c f Q
+q 0.170 0.630 0.170 rg 163.05 624.60 m 163.05 625.87 162.02 626.90 160.75 626.90 c 159.48 626.90 158.45 625.87 158.45 624.60 c 158.45 623.33 159.48 622.30 160.75 622.30 c 162.02 622.30 163.05 623.33 163.05 624.60 c f Q
+q 0.170 0.630 0.170 rg 221.81 645.16 m 221.81 646.43 220.78 647.46 219.51 647.46 c 218.24 647.46 217.21 646.43 217.21 645.16 c 217.21 643.89 218.24 642.86 219.51 642.86 c 220.78 642.86 221.81 643.89 221.81 645.16 c f Q
+q 0.170 0.630 0.170 rg 280.56 664.83 m 280.56 666.10 279.53 667.13 278.26 667.13 c 276.99 667.13 275.96 666.10 275.96 664.83 c 275.96 663.56 276.99 662.53 278.26 662.53 c 279.53 662.53 280.56 663.56 280.56 664.83 c f Q
+q 0.170 0.630 0.170 rg 339.31 681.15 m 339.31 682.42 338.29 683.45 337.01 683.45 c 335.74 683.45 334.71 682.42 334.71 681.15 c 334.71 679.88 335.74 678.85 337.01 678.85 c 338.29 678.85 339.31 679.88 339.31 681.15 c f Q
+q 0.170 0.630 0.170 rg 398.07 706.85 m 398.07 708.12 397.04 709.15 395.77 709.15 c 394.50 709.15 393.47 708.12 393.47 706.85 c 393.47 705.58 394.50 704.55 395.77 704.55 c 397.04 704.55 398.07 705.58 398.07 706.85 c f Q
+q 0.170 0.630 0.170 rg 456.82 699.93 m 456.82 701.20 455.79 702.23 454.52 702.23 c 453.25 702.23 452.22 701.20 452.22 699.93 c 452.22 698.66 453.25 697.63 454.52 697.63 c 455.79 697.63 456.82 698.66 456.82 699.93 c f Q
+q 0.170 0.630 0.170 rg 515.58 745.53 m 515.58 746.80 514.55 747.83 513.28 747.83 c 512.01 747.83 510.98 746.80 510.98 745.53 c 510.98 744.26 512.01 743.23 513.28 743.23 c 514.55 743.23 515.58 744.26 515.58 745.53 c f Q
+q 0.550 0.550 0.550 RG 1.15 w [5 3] 0 d 112.00 762.89 m 130.00 762.89 l S Q
+BT /F1 9.00 Tf 1 0 0 1 136.00 759.89 Tm (Ideal) Tj ET
+q 0.750 0.220 0.170 RG 1.35 w 112.00 750.89 m 130.00 750.89 l S Q
+q 0.750 0.220 0.170 rg 123.00 750.89 m 123.00 751.99 122.10 752.89 121.00 752.89 c 119.90 752.89 119.00 751.99 119.00 750.89 c 119.00 749.79 119.90 748.89 121.00 748.89 c 122.10 748.89 123.00 749.79 123.00 750.89 c f Q
+BT /F1 9.00 Tf 1 0 0 1 136.00 747.89 Tm (Naive View 1) Tj ET
+q 0.900 0.490 0.130 RG 1.35 w 112.00 738.89 m 130.00 738.89 l S Q
+q 0.900 0.490 0.130 rg 123.00 738.89 m 123.00 739.99 122.10 740.89 121.00 740.89 c 119.90 740.89 119.00 739.99 119.00 738.89 c 119.00 737.79 119.90 736.89 121.00 736.89 c 122.10 736.89 123.00 737.79 123.00 738.89 c f Q
+BT /F1 9.00 Tf 1 0 0 1 136.00 735.89 Tm (Naive View 2) Tj ET
+q 0.120 0.470 0.710 RG 1.35 w 112.00 726.89 m 130.00 726.89 l S Q
+q 0.120 0.470 0.710 rg 123.00 726.89 m 123.00 727.99 122.10 728.89 121.00 728.89 c 119.90 728.89 119.00 727.99 119.00 726.89 c 119.00 725.79 119.90 724.89 121.00 724.89 c 122.10 724.89 123.00 725.79 123.00 726.89 c f Q
+BT /F1 9.00 Tf 1 0 0 1 136.00 723.89 Tm (Interleaved View 1) Tj ET
+q 0.170 0.630 0.170 RG 1.35 w 112.00 714.89 m 130.00 714.89 l S Q
+q 0.170 0.630 0.170 rg 123.00 714.89 m 123.00 715.99 122.10 716.89 121.00 716.89 c 119.90 716.89 119.00 715.99 119.00 714.89 c 119.00 713.79 119.90 712.89 121.00 712.89 c 122.10 712.89 123.00 713.79 123.00 714.89 c f Q
+BT /F1 9.00 Tf 1 0 0 1 136.00 711.89 Tm (Interleaved View 2) Tj ET
+BT /F3 10.00 Tf 1 0 0 1 72.00 541.89 Tm (Figure 1. Fractal speedup vs thread count for both views.) Tj ET
+BT 0.722 Tw /F1 11.00 Tf 1 0 0 1 72.00 523.89 Tm (Figure 1 and Table 1 show the same data. The grey dashed line is ideal linear speedup \(2 threads ->) Tj ET
 BT 0 Tw ET
-BT 0.267 Tw /F1 10.50 Tf 1 0 0 1 64.00 763.39 Tm (automatically, so with 601 rows and 3 threads the blocks are [0, 200\), [200, 400\) and [400, 601\). Every row is) Tj ET
+BT 1.899 Tw /F1 11.00 Tf 1 0 0 1 72.00 509.89 Tm (2x, 8 threads -> 8x\). The red/orange curves are the naive split. They stay well below ideal: at 8) Tj ET
 BT 0 Tw ET
-BT /F1 10.50 Tf 1 0 0 1 64.00 748.89 Tm (rendered exactly once, and no row is rendered twice, for any thread count from 1 to 16.) Tj ET
-BT /F3 9.50 Tf 1 0 0 1 64.00 730.39 Tm (Table 1. Naive contiguous-block speedup from ./fractal --sweep --check.) Tj ET
-q 0.25 G 0.80 w 64.00 721.39 m 534.00 721.39 l S Q
-BT /F2 9.80 Tf 1 0 0 1 66.00 711.39 Tm (Threads) Tj ET
-BT /F2 9.80 Tf 1 0 0 1 282.66 711.39 Tm (View 1 speedup) Tj ET
-BT /F2 9.80 Tf 1 0 0 1 462.66 711.39 Tm (View 2 speedup) Tj ET
-q 0.50 G 0.50 w 64.00 707.39 m 534.00 707.39 l S Q
-BT /F1 9.80 Tf 1 0 0 1 66.00 697.89 Tm (1) Tj ET
-BT /F1 9.80 Tf 1 0 0 1 330.85 697.89 Tm (0.99) Tj ET
-BT /F1 9.80 Tf 1 0 0 1 510.85 697.89 Tm (1.00) Tj ET
-BT /F1 9.80 Tf 1 0 0 1 66.00 684.39 Tm (2) Tj ET
-BT /F1 9.80 Tf 1 0 0 1 330.85 684.39 Tm (1.96) Tj ET
-BT /F1 9.80 Tf 1 0 0 1 510.85 684.39 Tm (1.16) Tj ET
-BT /F1 9.80 Tf 1 0 0 1 66.00 670.89 Tm (3) Tj ET
-BT /F1 9.80 Tf 1 0 0 1 330.85 670.89 Tm (2.26) Tj ET
-BT /F1 9.80 Tf 1 0 0 1 510.85 670.89 Tm (1.79) Tj ET
-BT /F1 9.80 Tf 1 0 0 1 66.00 657.39 Tm (4) Tj ET
-BT /F1 9.80 Tf 1 0 0 1 330.85 657.39 Tm (2.97) Tj ET
-BT /F1 9.80 Tf 1 0 0 1 510.85 657.39 Tm (2.20) Tj ET
-BT /F1 9.80 Tf 1 0 0 1 66.00 643.89 Tm (5) Tj ET
-BT /F1 9.80 Tf 1 0 0 1 330.85 643.89 Tm (2.92) Tj ET
-BT /F1 9.80 Tf 1 0 0 1 510.85 643.89 Tm (2.74) Tj ET
-BT /F1 9.80 Tf 1 0 0 1 66.00 630.39 Tm (6) Tj ET
-BT /F1 9.80 Tf 1 0 0 1 330.85 630.39 Tm (4.40) Tj ET
-BT /F1 9.80 Tf 1 0 0 1 510.85 630.39 Tm (3.28) Tj ET
-BT /F1 9.80 Tf 1 0 0 1 66.00 616.89 Tm (7) Tj ET
-BT /F1 9.80 Tf 1 0 0 1 330.85 616.89 Tm (5.11) Tj ET
-BT /F1 9.80 Tf 1 0 0 1 510.85 616.89 Tm (3.43) Tj ET
-BT /F1 9.80 Tf 1 0 0 1 66.00 603.39 Tm (8) Tj ET
-BT /F1 9.80 Tf 1 0 0 1 330.85 603.39 Tm (5.62) Tj ET
-BT /F1 9.80 Tf 1 0 0 1 510.85 603.39 Tm (4.04) Tj ET
-q 0.25 G 0.80 w 64.00 599.39 m 534.00 599.39 l S Q
-BT 0.434 Tw /F1 10.50 Tf 1 0 0 1 64.00 577.89 Tm (Speedup is clearly not linear. At eight threads the naive mapping delivers only 5.62x on View 1 and 4.04x on) Tj ET
+BT 1.330 Tw /F1 11.00 Tf 1 0 0 1 72.00 495.89 Tm (threads they only reach 5.62x \(View 1\) and 4.04x \(View 2\). The blue/green curves are interleaved) Tj ET
 BT 0 Tw ET
-BT 0.158 Tw /F1 10.50 Tf 1 0 0 1 64.00 563.39 Tm (View 2, well short of the ideal 8x. The reason is that equal numbers of rows do not represent equal amounts of) Tj ET
+BT 1.611 Tw /F1 11.00 Tf 1 0 0 1 72.00 481.89 Tm (rows. They stay much closer to ideal and reach 7.56x and 7.41x at 8 threads. Notice the dip at 3) Tj ET
 BT 0 Tw ET
-BT 0.328 Tw /F1 10.50 Tf 1 0 0 1 64.00 548.89 Tm (work: a thread that happens to own the dense part of the fractal performs far more iterations than a thread that) Tj ET
+BT /F1 11.00 Tf 1 0 0 1 72.00 467.89 Tm (threads on the naive curves: that is load imbalance, explained next.) Tj ET
+BT /F2 11.00 Tf 1 0 0 1 72.00 449.89 Tm (1.3 Written analysis) Tj ET
+BT 0.436 Tw /F1 11.00 Tf 1 0 0 1 72.00 435.89 Tm (Is speedup linear? No. With the naive split, speedup does not grow in a straight line. At 3 threads we) Tj ET
 BT 0 Tw ET
-BT /F1 10.50 Tf 1 0 0 1 64.00 534.39 Tm (owns a mostly-escaped region, and the whole image is not finished until the slowest thread finishes.) Tj ET
-BT /F2 11.50 Tf 1 0 0 1 64.00 512.89 Tm (2.4  The three-thread anomaly on both views) Tj ET
-BT 0.931 Tw /F1 10.50 Tf 1 0 0 1 64.00 497.89 Tm (The three-thread datapoint is the clearest illustration of this effect, and it fails for a different reason on each) Tj ET
+BT 0.641 Tw /F1 11.00 Tf 1 0 0 1 72.00 421.89 Tm (got about 2.3x on View 1 and 1.8x on View 2. At 8 threads we got about 5.6x and 4.0x. Equal rows) Tj ET
 BT 0 Tw ET
-BT 0.846 Tw /F1 10.50 Tf 1 0 0 1 64.00 483.39 Tm (view. Because the total run time is bounded below by the slowest thread, the per-thread timings collected in) Tj ET
+BT /F1 11.00 Tf 1 0 0 1 72.00 407.89 Tm (does not mean equal work, because some rows have many hard pixels and some have almost none.) Tj ET
+BT 1.511 Tw /F1 11.00 Tf 1 0 0 1 72.00 389.89 Tm (What does the 3-thread point show? Load imbalance. Height is 601, so the blocks are about rows) Tj ET
 BT 0 Tw ET
-BT /F1 10.50 Tf 1 0 0 1 64.00 468.89 Tm (stage 3 explain the anomaly directly.) Tj ET
-BT /F3 9.50 Tf 1 0 0 1 64.00 450.39 Tm (Table 2. Per-thread work time, naive contiguous mapping, three threads.) Tj ET
-q 0.25 G 0.80 w 64.00 441.39 m 534.00 441.39 l S Q
-BT /F2 9.80 Tf 1 0 0 1 66.00 431.39 Tm (Thread) Tj ET
-BT /F2 9.80 Tf 1 0 0 1 146.00 431.39 Tm (Rows owned) Tj ET
-BT /F2 9.80 Tf 1 0 0 1 330.68 431.39 Tm (View 1 time \(s\)) Tj ET
-BT /F2 9.80 Tf 1 0 0 1 465.68 431.39 Tm (View 2 time \(s\)) Tj ET
-q 0.50 G 0.50 w 64.00 427.39 m 534.00 427.39 l S Q
-BT /F1 9.80 Tf 1 0 0 1 66.00 417.89 Tm (0) Tj ET
-BT /F1 9.80 Tf 1 0 0 1 146.00 417.89 Tm (0 - 199) Tj ET
-BT /F1 9.80 Tf 1 0 0 1 366.05 417.89 Tm (0.1058) Tj ET
-BT /F1 9.80 Tf 1 0 0 1 501.05 417.89 Tm (0.1428) Tj ET
-BT /F1 9.80 Tf 1 0 0 1 66.00 404.39 Tm (1) Tj ET
-BT /F1 9.80 Tf 1 0 0 1 146.00 404.39 Tm (200 - 399) Tj ET
-BT /F1 9.80 Tf 1 0 0 1 366.05 404.39 Tm (0.1526) Tj ET
-BT /F1 9.80 Tf 1 0 0 1 501.05 404.39 Tm (0.1100) Tj ET
-BT /F1 9.80 Tf 1 0 0 1 66.00 390.89 Tm (2) Tj ET
-BT /F1 9.80 Tf 1 0 0 1 146.00 390.89 Tm (400 - 600) Tj ET
-BT /F1 9.80 Tf 1 0 0 1 366.05 390.89 Tm (0.1082) Tj ET
-BT /F1 9.80 Tf 1 0 0 1 501.05 390.89 Tm (0.0064) Tj ET
-q 0.25 G 0.80 w 64.00 386.89 m 534.00 386.89 l S Q
-BT 0.117 Tw /F1 10.50 Tf 1 0 0 1 64.00 365.39 Tm (On View 1 the fractal body sits in the vertical centre of the frame, so thread 1 owns the expensive middle band) Tj ET
+BT /F1 11.00 Tf 1 0 0 1 72.00 375.89 Tm (0-199, 200-399, and 400-600. The whole run waits for the slowest thread.) Tj ET
+BT /F3 10.00 Tf 1 0 0 1 72.00 357.89 Tm (Table 2. Per-thread work times, naive mapping, 3 threads.) Tj ET
+q 0.000 0.000 0.000 RG 0.90 w 72.00 351.89 m 492.00 351.89 l S Q
+BT /F2 10.00 Tf 1 0 0 1 91.16 341.89 Tm (Thread) Tj ET
+BT /F2 10.00 Tf 1 0 0 1 144.00 341.89 Tm (Rows) Tj ET
+BT /F2 10.00 Tf 1 0 0 1 294.41 341.89 Tm (View 1 time \(s\)) Tj ET
+BT /F2 10.00 Tf 1 0 0 1 424.41 341.89 Tm (View 2 time \(s\)) Tj ET
+q 0.000 0.000 0.000 RG 0.60 w 72.00 337.89 m 492.00 337.89 l S Q
+BT /F1 10.00 Tf 1 0 0 1 104.50 327.89 Tm (0) Tj ET
+BT /F1 10.00 Tf 1 0 0 1 144.00 327.89 Tm (0-199) Tj ET
+BT /F1 10.00 Tf 1 0 0 1 330.50 327.89 Tm (0.1058) Tj ET
+BT /F1 10.00 Tf 1 0 0 1 460.50 327.89 Tm (0.1428) Tj ET
+BT /F1 10.00 Tf 1 0 0 1 104.50 313.89 Tm (1) Tj ET
+BT /F1 10.00 Tf 1 0 0 1 144.00 313.89 Tm (200-399) Tj ET
+BT /F1 10.00 Tf 1 0 0 1 330.50 313.89 Tm (0.1526) Tj ET
+BT /F1 10.00 Tf 1 0 0 1 460.50 313.89 Tm (0.1100) Tj ET
+BT /F1 10.00 Tf 1 0 0 1 104.50 299.89 Tm (2) Tj ET
+BT /F1 10.00 Tf 1 0 0 1 144.00 299.89 Tm (400-600) Tj ET
+BT /F1 10.00 Tf 1 0 0 1 330.50 299.89 Tm (0.1082) Tj ET
+BT /F1 10.00 Tf 1 0 0 1 460.50 299.89 Tm (0.0064) Tj ET
+q 0.000 0.000 0.000 RG 0.90 w 72.00 295.89 m 492.00 295.89 l S Q
+BT 0.677 Tw /F1 11.00 Tf 1 0 0 1 72.00 273.89 Tm (Table 2 explains the 3-thread dip in Figure 1. On View 1, thread 1 owns the dense middle and takes) Tj ET
 BT 0 Tw ET
-BT 0.188 Tw /F1 10.50 Tf 1 0 0 1 64.00 350.89 Tm (and takes 0.1526 s while its two neighbours finish in roughly 0.108 s. The run time is set by thread 1, which is) Tj ET
+BT 0.504 Tw /F1 11.00 Tf 1 0 0 1 72.00 259.89 Tm (0.1526 s, while the others take about 0.106 s and 0.108 s, so speedup is only about 2.3x. On View 2,) Tj ET
 BT 0 Tw ET
-BT 1.412 Tw /F1 10.50 Tf 1 0 0 1 64.00 336.39 Tm (why the measured speedup is only about 2.3x instead of 3x: two of the three threads spend approximately) Tj ET
+BT 0.467 Tw /F1 11.00 Tf 1 0 0 1 72.00 245.89 Tm (most hard pixels are upper, so thread 2 finishes in 0.0064 s and sits idle while thread 0 works 0.1428) Tj ET
 BT 0 Tw ET
-BT /F1 10.50 Tf 1 0 0 1 64.00 321.89 Tm (thirty percent of the run idle.) Tj ET
-BT 0.588 Tw /F1 10.50 Tf 1 0 0 1 64.00 303.39 Tm (On View 2 the imbalance is far more severe and sits at the opposite end of the image. View 2 is a zoom into) Tj ET
+BT /F1 11.00 Tf 1 0 0 1 72.00 231.89 Tm (s; speedup is only about 1.8x.) Tj ET
+BT 0.155 Tw /F1 11.00 Tf 1 0 0 1 72.00 213.89 Tm (What did per-thread timings show? Finish time follows the slowest thread. After interleaved rows, the) Tj ET
 BT 0 Tw ET
-BT 0.093 Tw /F1 10.50 Tf 1 0 0 1 64.00 288.89 Tm (the region x in [-0.90, -0.30], y in [0.30, 0.90], so nearly all of the expensive pixels live in the upper part of the) Tj ET
+BT 0.154 Tw /F1 11.00 Tf 1 0 0 1 72.00 199.89 Tm (three View 1 times became almost equal: about 0.124 s, 0.124 s, and 0.121 s. So the earlier slowdown) Tj ET
 BT 0 Tw ET
-BT 1.663 Tw /F1 10.50 Tf 1 0 0 1 64.00 274.39 Tm (frame. Thread 2, which owns the bottom third, finishes in 0.0064 s, roughly twenty-two times faster than) Tj ET
+BT /F1 11.00 Tf 1 0 0 1 72.00 185.89 Tm (was imbalance, not a hard limit on parallelism.) Tj ET
+BT 1.781 Tw /F1 11.00 Tf 1 0 0 1 72.00 167.89 Tm (What change for Part 4, and what speedup? We changed which rows each thread owns, not how) Tj ET
 BT 0 Tw ET
-BT 2.223 Tw /F1 10.50 Tf 1 0 0 1 64.00 259.89 Tm (thread 0. One of the three threads is therefore effectively unused for the entire render, and the speedup) Tj ET
+BT 0.089 Tw /F1 11.00 Tf 1 0 0 1 72.00 153.89 Tm (many: interleaved rows i, i+N, i+2N, ... with no locks. Hard and easy rows get mixed. At 8 threads we) Tj ET
 BT 0 Tw ET
-BT 0.501 Tw /F1 10.50 Tf 1 0 0 1 64.00 245.39 Tm (collapses to about 1.8x. The important conclusion is that a single static contiguous policy cannot be tuned for) Tj ET
+BT /F1 11.00 Tf 1 0 0 1 72.00 139.89 Tm (got 7.56x on View 1 and 7.41x on View 2 \(meets the 7-8x goal\).) Tj ET
+BT 1.082 Tw /F1 11.00 Tf 1 0 0 1 72.00 121.89 Tm (Did 16 threads help over 8? Only a little. Once work is balanced, extra threads add scheduling and) Tj ET
 BT 0 Tw ET
-BT /F1 10.50 Tf 1 0 0 1 64.00 230.89 Tm (both views, because the vertical cost distribution is different in each.) Tj ET
-BT /F2 11.50 Tf 1 0 0 1 64.00 209.39 Tm (2.5  Stage 4: interleaved row assignment) Tj ET
-BT 1.613 Tw /F1 10.50 Tf 1 0 0 1 64.00 194.39 Tm (The fix keeps the number of rows per thread essentially unchanged and instead changes which rows each) Tj ET
-BT 0 Tw ET
-BT 0.996 Tw /F1 10.50 Tf 1 0 0 1 64.00 179.89 Tm (thread owns. Thread i is assigned rows i, i + numThreads, i + 2 * numThreads, and so on, so each thread's) Tj ET
-BT 0 Tw ET
-BT 0.282 Tw /F1 10.50 Tf 1 0 0 1 64.00 165.39 Tm (rows are spread uniformly over the whole image rather than clustered into one band. Adjacent expensive rows) Tj ET
-BT 0 Tw ET
-BT 1.057 Tw /F1 10.50 Tf 1 0 0 1 64.00 150.89 Tm (are now distributed round-robin across all threads, so every thread receives a statistically similar mixture of) Tj ET
-BT 0 Tw ET
-BT 0.358 Tw /F1 10.50 Tf 1 0 0 1 64.00 136.39 Tm (cheap and expensive work. The policy is a single static rule that is applied identically at every thread count, it) Tj ET
-BT 0 Tw ET
-BT 0.472 Tw /F1 10.50 Tf 1 0 0 1 64.00 121.89 Tm (requires no synchronisation, and it is selected at compile time by FRACTAL_INTERLEAVE \(0 for the naive) Tj ET
-BT 0 Tw ET
-BT /F1 10.50 Tf 1 0 0 1 64.00 107.39 Tm (mapping, 1 for the interleaved mapping\) so that both versions remain available in the submitted source.) Tj ET
-BT /F1 9.00 Tf 1 0 0 1 295.39 38.00 Tm (2) Tj ET
+BT /F1 11.00 Tf 1 0 0 1 72.00 107.89 Tm (cache overhead, so 16 is not much faster than a balanced 8.) Tj ET
+BT /F1 10.00 Tf 1 0 0 1 295.14 44.00 Tm (2) Tj ET
 endstream
 endobj
 9 0 obj
 << /Type /Page /Parent 2 0 R /MediaBox [0 0 595.28 841.89] /Contents 8 0 R /Resources << /Font << /F1 3 0 R /F2 4 0 R /F3 5 0 R >> >> >>
 endobj
 10 0 obj
-<< /Length 17941 >>
+<< /Length 6663 >>
 stream
-BT /F3 9.50 Tf 1 0 0 1 64.00 777.89 Tm (Table 3. Interleaved-row speedup from ./fractal --sweep --check \(best of runs\).) Tj ET
-q 0.25 G 0.80 w 64.00 768.89 m 534.00 768.89 l S Q
-BT /F2 9.80 Tf 1 0 0 1 66.00 758.89 Tm (Threads) Tj ET
-BT /F2 9.80 Tf 1 0 0 1 282.66 758.89 Tm (View 1 speedup) Tj ET
-BT /F2 9.80 Tf 1 0 0 1 462.66 758.89 Tm (View 2 speedup) Tj ET
-q 0.50 G 0.50 w 64.00 754.89 m 534.00 754.89 l S Q
-BT /F1 9.80 Tf 1 0 0 1 66.00 745.39 Tm (1) Tj ET
-BT /F1 9.80 Tf 1 0 0 1 330.85 745.39 Tm (0.99) Tj ET
-BT /F1 9.80 Tf 1 0 0 1 510.85 745.39 Tm (1.01) Tj ET
-BT /F1 9.80 Tf 1 0 0 1 66.00 731.89 Tm (2) Tj ET
-BT /F1 9.80 Tf 1 0 0 1 330.85 731.89 Tm (1.95) Tj ET
-BT /F1 9.80 Tf 1 0 0 1 510.85 731.89 Tm (2.00) Tj ET
-BT /F1 9.80 Tf 1 0 0 1 66.00 718.39 Tm (3) Tj ET
-BT /F1 9.80 Tf 1 0 0 1 330.85 718.39 Tm (2.88) Tj ET
-BT /F1 9.80 Tf 1 0 0 1 510.85 718.39 Tm (2.92) Tj ET
-BT /F1 9.80 Tf 1 0 0 1 66.00 704.89 Tm (4) Tj ET
-BT /F1 9.80 Tf 1 0 0 1 330.85 704.89 Tm (3.81) Tj ET
-BT /F1 9.80 Tf 1 0 0 1 510.85 704.89 Tm (3.80) Tj ET
-BT /F1 9.80 Tf 1 0 0 1 66.00 691.39 Tm (5) Tj ET
-BT /F1 9.80 Tf 1 0 0 1 330.85 691.39 Tm (4.70) Tj ET
-BT /F1 9.80 Tf 1 0 0 1 510.85 691.39 Tm (4.53) Tj ET
-BT /F1 9.80 Tf 1 0 0 1 66.00 677.89 Tm (6) Tj ET
-BT /F1 9.80 Tf 1 0 0 1 330.85 677.89 Tm (5.63) Tj ET
-BT /F1 9.80 Tf 1 0 0 1 510.85 677.89 Tm (5.68) Tj ET
-BT /F1 9.80 Tf 1 0 0 1 66.00 664.39 Tm (7) Tj ET
-BT /F1 9.80 Tf 1 0 0 1 330.85 664.39 Tm (5.45) Tj ET
-BT /F1 9.80 Tf 1 0 0 1 510.85 664.39 Tm (5.37) Tj ET
-BT /F1 9.80 Tf 1 0 0 1 66.00 650.89 Tm (8) Tj ET
-BT /F1 9.80 Tf 1 0 0 1 330.85 650.89 Tm (7.56) Tj ET
-BT /F1 9.80 Tf 1 0 0 1 510.85 650.89 Tm (7.41) Tj ET
-q 0.25 G 0.80 w 64.00 646.89 m 534.00 646.89 l S Q
-q 0.86 G 0.35 w 98.00 429.39 m 519.28 429.39 l S Q
-BT /F1 8.50 Tf 1 0 0 1 87.75 426.39 Tm (0) Tj ET
-q 0.86 G 0.35 w 98.00 452.45 m 519.28 452.45 l S Q
-BT /F1 8.50 Tf 1 0 0 1 87.75 449.45 Tm (1) Tj ET
-q 0.86 G 0.35 w 98.00 475.51 m 519.28 475.51 l S Q
-BT /F1 8.50 Tf 1 0 0 1 87.75 472.51 Tm (2) Tj ET
-q 0.86 G 0.35 w 98.00 498.57 m 519.28 498.57 l S Q
-BT /F1 8.50 Tf 1 0 0 1 87.75 495.57 Tm (3) Tj ET
-q 0.86 G 0.35 w 98.00 521.63 m 519.28 521.63 l S Q
-BT /F1 8.50 Tf 1 0 0 1 87.75 518.63 Tm (4) Tj ET
-q 0.86 G 0.35 w 98.00 544.68 m 519.28 544.68 l S Q
-BT /F1 8.50 Tf 1 0 0 1 87.75 541.68 Tm (5) Tj ET
-q 0.86 G 0.35 w 98.00 567.74 m 519.28 567.74 l S Q
-BT /F1 8.50 Tf 1 0 0 1 87.75 564.74 Tm (6) Tj ET
-q 0.86 G 0.35 w 98.00 590.80 m 519.28 590.80 l S Q
-BT /F1 8.50 Tf 1 0 0 1 87.75 587.80 Tm (7) Tj ET
-q 0.86 G 0.35 w 98.00 613.86 m 519.28 613.86 l S Q
-BT /F1 8.50 Tf 1 0 0 1 87.75 610.86 Tm (8) Tj ET
-q 0.90 G 0.30 w 98.00 429.39 m 98.00 625.39 l S Q
-BT /F1 8.50 Tf 1 0 0 1 95.88 416.39 Tm (1) Tj ET
-q 0.90 G 0.30 w 158.18 429.39 m 158.18 625.39 l S Q
-BT /F1 8.50 Tf 1 0 0 1 156.06 416.39 Tm (2) Tj ET
-q 0.90 G 0.30 w 218.36 429.39 m 218.36 625.39 l S Q
-BT /F1 8.50 Tf 1 0 0 1 216.24 416.39 Tm (3) Tj ET
-q 0.90 G 0.30 w 278.55 429.39 m 278.55 625.39 l S Q
-BT /F1 8.50 Tf 1 0 0 1 276.42 416.39 Tm (4) Tj ET
-q 0.90 G 0.30 w 338.73 429.39 m 338.73 625.39 l S Q
-BT /F1 8.50 Tf 1 0 0 1 336.60 416.39 Tm (5) Tj ET
-q 0.90 G 0.30 w 398.91 429.39 m 398.91 625.39 l S Q
-BT /F1 8.50 Tf 1 0 0 1 396.79 416.39 Tm (6) Tj ET
-q 0.90 G 0.30 w 459.09 429.39 m 459.09 625.39 l S Q
-BT /F1 8.50 Tf 1 0 0 1 456.97 416.39 Tm (7) Tj ET
-q 0.90 G 0.30 w 519.28 429.39 m 519.28 625.39 l S Q
-BT /F1 8.50 Tf 1 0 0 1 517.15 416.39 Tm (8) Tj ET
-q 0.20 G 0.90 w 98.00 429.39 m 98.00 625.39 l S Q
-q 0.20 G 0.90 w 98.00 429.39 m 519.28 429.39 l S Q
-BT /F1 9.50 Tf 1 0 0 1 273.02 402.39 Tm (Number of threads) Tj ET
-BT /F1 9.50 Tf 0 1 -1 0 62.00 511.03 Tm (Speedup) Tj ET
-q 0.550 0.550 0.550 RG 1.00 w 107.03 455.91 m 134.11 466.28 l S Q
-q 0.550 0.550 0.550 RG 1.00 w 167.21 478.97 m 194.29 489.34 l S Q
-q 0.550 0.550 0.550 RG 1.00 w 227.39 502.03 m 254.47 512.40 l S Q
-q 0.550 0.550 0.550 RG 1.00 w 287.57 525.08 m 314.66 535.46 l S Q
-q 0.550 0.550 0.550 RG 1.00 w 347.76 548.14 m 374.84 558.52 l S Q
-q 0.550 0.550 0.550 RG 1.00 w 407.94 571.20 m 435.02 581.58 l S Q
-q 0.550 0.550 0.550 RG 1.00 w 468.12 594.26 m 495.20 604.64 l S Q
-q 0.750 0.220 0.170 RG 1.35 w 98.00 452.22 m 158.18 474.59 l S Q
-q 0.750 0.220 0.170 RG 1.35 w 158.18 474.59 m 218.36 481.50 l S Q
-q 0.750 0.220 0.170 RG 1.35 w 218.36 481.50 m 278.55 497.87 l S Q
-q 0.750 0.220 0.170 RG 1.35 w 278.55 497.87 m 338.73 496.72 l S Q
-q 0.750 0.220 0.170 RG 1.35 w 338.73 496.72 m 398.91 530.85 l S Q
-q 0.750 0.220 0.170 RG 1.35 w 398.91 530.85 m 459.09 547.22 l S Q
-q 0.750 0.220 0.170 RG 1.35 w 459.09 547.22 m 519.28 558.98 l S Q
-q 0.750 0.220 0.170 rg 100.00 452.22 m 100.00 453.32 99.10 454.22 98.00 454.22 c 96.90 454.22 96.00 453.32 96.00 452.22 c 96.00 451.11 96.90 450.22 98.00 450.22 c 99.10 450.22 100.00 451.11 100.00 452.22 c f Q
-q 0.750 0.220 0.170 rg 160.18 474.59 m 160.18 475.69 159.29 476.59 158.18 476.59 c 157.08 476.59 156.18 475.69 156.18 474.59 c 156.18 473.48 157.08 472.59 158.18 472.59 c 159.29 472.59 160.18 473.48 160.18 474.59 c f Q
-q 0.750 0.220 0.170 rg 220.36 481.50 m 220.36 482.61 219.47 483.50 218.36 483.50 c 217.26 483.50 216.36 482.61 216.36 481.50 c 216.36 480.40 217.26 479.50 218.36 479.50 c 219.47 479.50 220.36 480.40 220.36 481.50 c f Q
-q 0.750 0.220 0.170 rg 280.55 497.87 m 280.55 498.98 279.65 499.87 278.55 499.87 c 277.44 499.87 276.55 498.98 276.55 497.87 c 276.55 496.77 277.44 495.87 278.55 495.87 c 279.65 495.87 280.55 496.77 280.55 497.87 c f Q
-q 0.750 0.220 0.170 rg 340.73 496.72 m 340.73 497.83 339.83 498.72 338.73 498.72 c 337.62 498.72 336.73 497.83 336.73 496.72 c 336.73 495.62 337.62 494.72 338.73 494.72 c 339.83 494.72 340.73 495.62 340.73 496.72 c f Q
-q 0.750 0.220 0.170 rg 400.91 530.85 m 400.91 531.95 400.02 532.85 398.91 532.85 c 397.81 532.85 396.91 531.95 396.91 530.85 c 396.91 529.74 397.81 528.85 398.91 528.85 c 400.02 528.85 400.91 529.74 400.91 530.85 c f Q
-q 0.750 0.220 0.170 rg 461.09 547.22 m 461.09 548.33 460.20 549.22 459.09 549.22 c 457.99 549.22 457.09 548.33 457.09 547.22 c 457.09 546.12 457.99 545.22 459.09 545.22 c 460.20 545.22 461.09 546.12 461.09 547.22 c f Q
-q 0.750 0.220 0.170 rg 521.28 558.98 m 521.28 560.09 520.38 560.98 519.28 560.98 c 518.17 560.98 517.28 560.09 517.28 558.98 c 517.28 557.88 518.17 556.98 519.28 556.98 c 520.38 556.98 521.28 557.88 521.28 558.98 c f Q
-q 0.900 0.490 0.130 RG 1.35 w 98.00 452.45 m 158.18 456.14 l S Q
-q 0.900 0.490 0.130 RG 1.35 w 158.18 456.14 m 218.36 470.67 l S Q
-q 0.900 0.490 0.130 RG 1.35 w 218.36 470.67 m 278.55 480.12 l S Q
-q 0.900 0.490 0.130 RG 1.35 w 278.55 480.12 m 338.73 492.57 l S Q
-q 0.900 0.490 0.130 RG 1.35 w 338.73 492.57 m 398.91 505.02 l S Q
-q 0.900 0.490 0.130 RG 1.35 w 398.91 505.02 m 459.09 508.48 l S Q
-q 0.900 0.490 0.130 RG 1.35 w 459.09 508.48 m 519.28 522.55 l S Q
-q 0.900 0.490 0.130 rg 100.00 452.45 m 100.00 453.55 99.10 454.45 98.00 454.45 c 96.90 454.45 96.00 453.55 96.00 452.45 c 96.00 451.34 96.90 450.45 98.00 450.45 c 99.10 450.45 100.00 451.34 100.00 452.45 c f Q
-q 0.900 0.490 0.130 rg 160.18 456.14 m 160.18 457.24 159.29 458.14 158.18 458.14 c 157.08 458.14 156.18 457.24 156.18 456.14 c 156.18 455.03 157.08 454.14 158.18 454.14 c 159.29 454.14 160.18 455.03 160.18 456.14 c f Q
-q 0.900 0.490 0.130 rg 220.36 470.67 m 220.36 471.77 219.47 472.67 218.36 472.67 c 217.26 472.67 216.36 471.77 216.36 470.67 c 216.36 469.56 217.26 468.67 218.36 468.67 c 219.47 468.67 220.36 469.56 220.36 470.67 c f Q
-q 0.900 0.490 0.130 rg 280.55 480.12 m 280.55 481.22 279.65 482.12 278.55 482.12 c 277.44 482.12 276.55 481.22 276.55 480.12 c 276.55 479.01 277.44 478.12 278.55 478.12 c 279.65 478.12 280.55 479.01 280.55 480.12 c f Q
-q 0.900 0.490 0.130 rg 340.73 492.57 m 340.73 493.68 339.83 494.57 338.73 494.57 c 337.62 494.57 336.73 493.68 336.73 492.57 c 336.73 491.47 337.62 490.57 338.73 490.57 c 339.83 490.57 340.73 491.47 340.73 492.57 c f Q
-q 0.900 0.490 0.130 rg 400.91 505.02 m 400.91 506.13 400.02 507.02 398.91 507.02 c 397.81 507.02 396.91 506.13 396.91 505.02 c 396.91 503.92 397.81 503.02 398.91 503.02 c 400.02 503.02 400.91 503.92 400.91 505.02 c f Q
-q 0.900 0.490 0.130 rg 461.09 508.48 m 461.09 509.59 460.20 510.48 459.09 510.48 c 457.99 510.48 457.09 509.59 457.09 508.48 c 457.09 507.38 457.99 506.48 459.09 506.48 c 460.20 506.48 461.09 507.38 461.09 508.48 c f Q
-q 0.900 0.490 0.130 rg 521.28 522.55 m 521.28 523.65 520.38 524.55 519.28 524.55 c 518.17 524.55 517.28 523.65 517.28 522.55 c 517.28 521.44 518.17 520.55 519.28 520.55 c 520.38 520.55 521.28 521.44 521.28 522.55 c f Q
-q 0.120 0.470 0.710 RG 1.35 w 98.00 452.22 m 158.18 474.35 l S Q
-q 0.120 0.470 0.710 RG 1.35 w 158.18 474.35 m 218.36 495.80 l S Q
-q 0.120 0.470 0.710 RG 1.35 w 218.36 495.80 m 278.55 517.24 l S Q
-q 0.120 0.470 0.710 RG 1.35 w 278.55 517.24 m 338.73 537.77 l S Q
-q 0.120 0.470 0.710 RG 1.35 w 338.73 537.77 m 398.91 559.21 l S Q
-q 0.120 0.470 0.710 RG 1.35 w 398.91 559.21 m 459.09 555.06 l S Q
-q 0.120 0.470 0.710 RG 1.35 w 459.09 555.06 m 519.28 603.71 l S Q
-q 0.120 0.470 0.710 rg 100.00 452.22 m 100.00 453.32 99.10 454.22 98.00 454.22 c 96.90 454.22 96.00 453.32 96.00 452.22 c 96.00 451.11 96.90 450.22 98.00 450.22 c 99.10 450.22 100.00 451.11 100.00 452.22 c f Q
-q 0.120 0.470 0.710 rg 160.18 474.35 m 160.18 475.46 159.29 476.35 158.18 476.35 c 157.08 476.35 156.18 475.46 156.18 474.35 c 156.18 473.25 157.08 472.35 158.18 472.35 c 159.29 472.35 160.18 473.25 160.18 474.35 c f Q
-q 0.120 0.470 0.710 rg 220.36 495.80 m 220.36 496.90 219.47 497.80 218.36 497.80 c 217.26 497.80 216.36 496.90 216.36 495.80 c 216.36 494.69 217.26 493.80 218.36 493.80 c 219.47 493.80 220.36 494.69 220.36 495.80 c f Q
-q 0.120 0.470 0.710 rg 280.55 517.24 m 280.55 518.35 279.65 519.24 278.55 519.24 c 277.44 519.24 276.55 518.35 276.55 517.24 c 276.55 516.14 277.44 515.24 278.55 515.24 c 279.65 515.24 280.55 516.14 280.55 517.24 c f Q
-q 0.120 0.470 0.710 rg 340.73 537.77 m 340.73 538.87 339.83 539.77 338.73 539.77 c 337.62 539.77 336.73 538.87 336.73 537.77 c 336.73 536.66 337.62 535.77 338.73 535.77 c 339.83 535.77 340.73 536.66 340.73 537.77 c f Q
-q 0.120 0.470 0.710 rg 400.91 559.21 m 400.91 560.32 400.02 561.21 398.91 561.21 c 397.81 561.21 396.91 560.32 396.91 559.21 c 396.91 558.11 397.81 557.21 398.91 557.21 c 400.02 557.21 400.91 558.11 400.91 559.21 c f Q
-q 0.120 0.470 0.710 rg 461.09 555.06 m 461.09 556.17 460.20 557.06 459.09 557.06 c 457.99 557.06 457.09 556.17 457.09 555.06 c 457.09 553.96 457.99 553.06 459.09 553.06 c 460.20 553.06 461.09 553.96 461.09 555.06 c f Q
-q 0.120 0.470 0.710 rg 521.28 603.71 m 521.28 604.82 520.38 605.71 519.28 605.71 c 518.17 605.71 517.28 604.82 517.28 603.71 c 517.28 602.61 518.17 601.71 519.28 601.71 c 520.38 601.71 521.28 602.61 521.28 603.71 c f Q
-q 0.170 0.630 0.170 RG 1.35 w 98.00 452.68 m 158.18 475.51 l S Q
-q 0.170 0.630 0.170 RG 1.35 w 158.18 475.51 m 218.36 496.72 l S Q
-q 0.170 0.630 0.170 RG 1.35 w 218.36 496.72 m 278.55 517.01 l S Q
-q 0.170 0.630 0.170 RG 1.35 w 278.55 517.01 m 338.73 533.85 l S Q
-q 0.170 0.630 0.170 RG 1.35 w 338.73 533.85 m 398.91 560.36 l S Q
-q 0.170 0.630 0.170 RG 1.35 w 398.91 560.36 m 459.09 553.22 l S Q
-q 0.170 0.630 0.170 RG 1.35 w 459.09 553.22 m 519.28 600.26 l S Q
-q 0.170 0.630 0.170 rg 100.00 452.68 m 100.00 453.78 99.10 454.68 98.00 454.68 c 96.90 454.68 96.00 453.78 96.00 452.68 c 96.00 451.57 96.90 450.68 98.00 450.68 c 99.10 450.68 100.00 451.57 100.00 452.68 c f Q
-q 0.170 0.630 0.170 rg 160.18 475.51 m 160.18 476.61 159.29 477.51 158.18 477.51 c 157.08 477.51 156.18 476.61 156.18 475.51 c 156.18 474.40 157.08 473.51 158.18 473.51 c 159.29 473.51 160.18 474.40 160.18 475.51 c f Q
-q 0.170 0.630 0.170 rg 220.36 496.72 m 220.36 497.83 219.47 498.72 218.36 498.72 c 217.26 498.72 216.36 497.83 216.36 496.72 c 216.36 495.62 217.26 494.72 218.36 494.72 c 219.47 494.72 220.36 495.62 220.36 496.72 c f Q
-q 0.170 0.630 0.170 rg 280.55 517.01 m 280.55 518.12 279.65 519.01 278.55 519.01 c 277.44 519.01 276.55 518.12 276.55 517.01 c 276.55 515.91 277.44 515.01 278.55 515.01 c 279.65 515.01 280.55 515.91 280.55 517.01 c f Q
-q 0.170 0.630 0.170 rg 340.73 533.85 m 340.73 534.95 339.83 535.85 338.73 535.85 c 337.62 535.85 336.73 534.95 336.73 533.85 c 336.73 532.74 337.62 531.85 338.73 531.85 c 339.83 531.85 340.73 532.74 340.73 533.85 c f Q
-q 0.170 0.630 0.170 rg 400.91 560.36 m 400.91 561.47 400.02 562.36 398.91 562.36 c 397.81 562.36 396.91 561.47 396.91 560.36 c 396.91 559.26 397.81 558.36 398.91 558.36 c 400.02 558.36 400.91 559.26 400.91 560.36 c f Q
-q 0.170 0.630 0.170 rg 461.09 553.22 m 461.09 554.32 460.20 555.22 459.09 555.22 c 457.99 555.22 457.09 554.32 457.09 553.22 c 457.09 552.11 457.99 551.22 459.09 551.22 c 460.20 551.22 461.09 552.11 461.09 553.22 c f Q
-q 0.170 0.630 0.170 rg 521.28 600.26 m 521.28 601.36 520.38 602.26 519.28 602.26 c 518.17 602.26 517.28 601.36 517.28 600.26 c 517.28 599.15 518.17 598.26 519.28 598.26 c 520.38 598.26 521.28 599.15 521.28 600.26 c f Q
-q 0.550 0.550 0.550 RG 1.20 w 112.00 616.39 m 132.00 616.39 l S Q
-BT /F1 8.80 Tf 1 0 0 1 138.00 613.39 Tm (Ideal linear) Tj ET
-q 0.750 0.220 0.170 RG 1.20 w 112.00 604.39 m 132.00 604.39 l S Q
-q 0.750 0.220 0.170 rg 123.90 604.39 m 123.90 605.44 123.05 606.29 122.00 606.29 c 120.95 606.29 120.10 605.44 120.10 604.39 c 120.10 603.34 120.95 602.49 122.00 602.49 c 123.05 602.49 123.90 603.34 123.90 604.39 c f Q
-BT /F1 8.80 Tf 1 0 0 1 138.00 601.39 Tm (Naive, View 1) Tj ET
-q 0.900 0.490 0.130 RG 1.20 w 112.00 592.39 m 132.00 592.39 l S Q
-q 0.900 0.490 0.130 rg 123.90 592.39 m 123.90 593.44 123.05 594.29 122.00 594.29 c 120.95 594.29 120.10 593.44 120.10 592.39 c 120.10 591.34 120.95 590.49 122.00 590.49 c 123.05 590.49 123.90 591.34 123.90 592.39 c f Q
-BT /F1 8.80 Tf 1 0 0 1 138.00 589.39 Tm (Naive, View 2) Tj ET
-q 0.120 0.470 0.710 RG 1.20 w 112.00 580.39 m 132.00 580.39 l S Q
-q 0.120 0.470 0.710 rg 123.90 580.39 m 123.90 581.44 123.05 582.29 122.00 582.29 c 120.95 582.29 120.10 581.44 120.10 580.39 c 120.10 579.34 120.95 578.49 122.00 578.49 c 123.05 578.49 123.90 579.34 123.90 580.39 c f Q
-BT /F1 8.80 Tf 1 0 0 1 138.00 577.39 Tm (Interleaved, View 1) Tj ET
-q 0.170 0.630 0.170 RG 1.20 w 112.00 568.39 m 132.00 568.39 l S Q
-q 0.170 0.630 0.170 rg 123.90 568.39 m 123.90 569.44 123.05 570.29 122.00 570.29 c 120.95 570.29 120.10 569.44 120.10 568.39 c 120.10 567.34 120.95 566.49 122.00 566.49 c 123.05 566.49 123.90 567.34 123.90 568.39 c f Q
-BT /F1 8.80 Tf 1 0 0 1 138.00 565.39 Tm (Interleaved, View 2) Tj ET
-BT /F3 9.50 Tf 1 0 0 1 64.00 389.39 Tm (Figure 1. Fractal speedup against thread count for both views, naive contiguous blocks versus interleaved rows.) Tj ET
-BT 1.739 Tw /F1 10.50 Tf 1 0 0 1 64.00 369.39 Tm (The interleaved mapping reaches 7.56x on View 1 and 7.41x on View 2 at eight threads, both inside the) Tj ET
+BT /F2 12.50 Tf 1 0 0 1 72.00 767.89 Tm (2. Part 2: SIMD Clamped Alternating Series) Tj ET
+BT /F2 11.00 Tf 1 0 0 1 72.00 751.89 Tm (2.1 Implementation) Tj ET
+BT 0.782 Tw /F1 11.00 Tf 1 0 0 1 72.00 737.89 Tm (The code is in clampedAltVector\(\) in main.cpp, using PDCvector.h. We process VECTOR_WIDTH) Tj ET
 BT 0 Tw ET
-BT 0.674 Tw /F1 10.50 Tf 1 0 0 1 64.00 354.89 Tm (seven-to-eight-times target, and it removes the three-thread anomaly on both views \(2.88x and 2.92x, against) Tj ET
+BT 0.699 Tw /F1 11.00 Tf 1 0 0 1 72.00 723.89 Tm (elements at a time. A valid mask marks real lanes \(needed for the last partial chunk\). An alive mask) Tj ET
 BT 0 Tw ET
-BT 1.097 Tw /F1 10.50 Tf 1 0 0 1 64.00 340.39 Tm (2.26x and 1.79x before\). The per-thread timings confirm the mechanism rather than merely the outcome: at) Tj ET
+BT 2.124 Tw /F1 11.00 Tf 1 0 0 1 72.00 709.89 Tm (tracks lanes that have not clamped yet. On each step, only alive lanes that still have work do a) Tj ET
 BT 0 Tw ET
-BT 0.727 Tw /F1 10.50 Tf 1 0 0 1 64.00 325.89 Tm (three threads on View 1 the three workers now take 0.1235 s, 0.1235 s and 0.1208 s, and at eight threads on) Tj ET
+BT 1.252 Tw /F1 11.00 Tf 1 0 0 1 72.00 695.89 Tm (multiply \(even step\) or add \(odd step\). If a lane passes its cap, we set it to the cap and turn it off.) Tj ET
 BT 0 Tw ET
-BT 1.616 Tw /F1 10.50 Tf 1 0 0 1 64.00 311.39 Tm (View 1 they span only 0.0483 s to 0.0575 s. Compared with the naive eight-thread spread of 0.0238 s to) Tj ET
+BT /F1 11.00 Tf 1 0 0 1 72.00 681.89 Tm (Values under 0.0001 become exactly 0, same as serial. Output matched serial under --check.) Tj ET
+BT /F2 11.00 Tf 1 0 0 1 72.00 663.89 Tm (2.2 Results) Tj ET
+BT /F3 10.00 Tf 1 0 0 1 72.00 649.89 Tm (Table 3. Vector utilization from ./altseries -s 10000.) Tj ET
+q 0.000 0.000 0.000 RG 0.90 w 72.00 643.89 m 372.00 643.89 l S Q
+BT /F2 10.00 Tf 1 0 0 1 110.33 633.89 Tm (VECTOR_WIDTH) Tj ET
+BT /F2 10.00 Tf 1 0 0 1 323.00 633.89 Tm (Utilization) Tj ET
+q 0.000 0.000 0.000 RG 0.60 w 72.00 629.89 m 372.00 629.89 l S Q
+BT /F1 10.00 Tf 1 0 0 1 149.50 619.89 Tm (2) Tj ET
+BT /F1 10.00 Tf 1 0 0 1 342.17 619.89 Tm (67.6%) Tj ET
+BT /F1 10.00 Tf 1 0 0 1 149.50 605.89 Tm (4) Tj ET
+BT /F1 10.00 Tf 1 0 0 1 342.17 605.89 Tm (62.9%) Tj ET
+BT /F1 10.00 Tf 1 0 0 1 149.50 591.89 Tm (8) Tj ET
+BT /F1 10.00 Tf 1 0 0 1 342.17 591.89 Tm (59.1%) Tj ET
+BT /F1 10.00 Tf 1 0 0 1 147.00 577.89 Tm (16) Tj ET
+BT /F1 10.00 Tf 1 0 0 1 342.17 577.89 Tm (56.2%) Tj ET
+q 0.000 0.000 0.000 RG 0.90 w 72.00 573.89 m 372.00 573.89 l S Q
+BT 0.774 Tw /F1 11.00 Tf 1 0 0 1 72.00 551.89 Tm (Table 3 is the key result for Part 2. Utilization falls as VECTOR_WIDTH grows: 67.6% at width 2,) Tj ET
 BT 0 Tw ET
-BT 1.430 Tw /F1 10.50 Tf 1 0 0 1 64.00 296.89 Tm (0.0681 s, the gap between the fastest and slowest thread has shrunk from nearly threefold to about twenty) Tj ET
+BT 0.824 Tw /F1 11.00 Tf 1 0 0 1 72.00 537.89 Tm (then 62.9%, 59.1%, and 56.2% at width 16. There is no speedup graph here because the assignment) Tj ET
 BT 0 Tw ET
-BT /F1 10.50 Tf 1 0 0 1 64.00 282.39 Tm (percent.) Tj ET
-BT /F3 9.50 Tf 1 0 0 1 64.00 263.89 Tm (Table 4. Load balance before and after the mapping change.) Tj ET
-q 0.25 G 0.80 w 64.00 254.89 m 526.00 254.89 l S Q
-BT /F2 9.80 Tf 1 0 0 1 66.00 244.89 Tm (Configuration) Tj ET
-BT /F2 9.80 Tf 1 0 0 1 282.61 244.89 Tm (Fastest thread \(s\)) Tj ET
-BT /F2 9.80 Tf 1 0 0 1 380.42 244.89 Tm (Slowest thread \(s\)) Tj ET
-BT /F2 9.80 Tf 1 0 0 1 490.05 244.89 Tm (Spread) Tj ET
-q 0.50 G 0.50 w 64.00 240.89 m 526.00 240.89 l S Q
-BT /F1 9.80 Tf 1 0 0 1 66.00 231.39 Tm (Naive, 8 threads, View 1) Tj ET
-BT /F1 9.80 Tf 1 0 0 1 328.05 231.39 Tm (0.0238) Tj ET
-BT /F1 9.80 Tf 1 0 0 1 428.05 231.39 Tm (0.0681) Tj ET
-BT /F1 9.80 Tf 1 0 0 1 497.95 231.39 Tm (2.86x) Tj ET
-BT /F1 9.80 Tf 1 0 0 1 66.00 217.89 Tm (Interleaved, 8 threads, View 1) Tj ET
-BT /F1 9.80 Tf 1 0 0 1 328.05 217.89 Tm (0.0483) Tj ET
-BT /F1 9.80 Tf 1 0 0 1 428.05 217.89 Tm (0.0575) Tj ET
-BT /F1 9.80 Tf 1 0 0 1 497.95 217.89 Tm (1.19x) Tj ET
-BT /F1 9.80 Tf 1 0 0 1 66.00 204.39 Tm (Interleaved, 8 threads, View 2) Tj ET
-BT /F1 9.80 Tf 1 0 0 1 328.05 204.39 Tm (0.0335) Tj ET
-BT /F1 9.80 Tf 1 0 0 1 428.05 204.39 Tm (0.0465) Tj ET
-BT /F1 9.80 Tf 1 0 0 1 497.95 204.39 Tm (1.39x) Tj ET
-q 0.25 G 0.80 w 64.00 200.39 m 526.00 200.39 l S Q
-BT /F2 11.50 Tf 1 0 0 1 64.00 175.89 Tm (2.6  Stage 5: sixteen threads) Tj ET
-BT 0.591 Tw /F1 10.50 Tf 1 0 0 1 64.00 160.89 Tm (Running the interleaved build at sixteen threads gave no meaningful improvement over a well-balanced eight) Tj ET
+BT /F1 11.00 Tf 1 0 0 1 72.00 523.89 Tm (asks for utilization, not thread speedup.) Tj ET
+BT /F2 11.00 Tf 1 0 0 1 72.00 505.89 Tm (2.3 Written analysis) Tj ET
+BT /F1 11.00 Tf 1 0 0 1 72.00 491.89 Tm (Does utilization go up, down, or stay the same as width grows? It goes down.) Tj ET
+BT 0.862 Tw /F1 11.00 Tf 1 0 0 1 72.00 473.89 Tm (Why? All lanes in one vector move together. Some finish early \(small count or early clamp\). Those) Tj ET
 BT 0 Tw ET
-BT 1.481 Tw /F1 10.50 Tf 1 0 0 1 64.00 146.39 Tm (threads: a representative run measured 7.14x on View 1 and 6.26x on View 2 at sixteen threads, which is) Tj ET
+BT 1.226 Tw /F1 11.00 Tf 1 0 0 1 72.00 459.89 Tm (lanes are clamped off and sit idle while other lanes in the same vector keep going. A wider vector) Tj ET
 BT 0 Tw ET
-BT 0.556 Tw /F1 10.50 Tf 1 0 0 1 64.00 131.89 Tm (within run-to-run noise of the 7.56x and 7.41x already obtained at eight. This is the expected result. The host) Tj ET
+BT 0.742 Tw /F1 11.00 Tf 1 0 0 1 72.00 445.89 Tm (packs more elements under one shared clock, so more lanes are likely already idle while a few slow) Tj ET
 BT 0 Tw ET
-BT 1.135 Tw /F1 10.50 Tf 1 0 0 1 64.00 117.39 Tm (exposes sixteen logical cores but far fewer independent floating-point pipelines, so once the work is evenly) Tj ET
+BT 0.783 Tw /F1 11.00 Tf 1 0 0 1 72.00 431.89 Tm (lanes still work. The machine still pays for the full width, but fewer lanes do useful work each step.) Tj ET
 BT 0 Tw ET
-BT 0.677 Tw /F1 10.50 Tf 1 0 0 1 64.00 102.89 Tm (divided the extra threads compete for the same execution resources and add scheduling and cache-contention) Tj ET
+BT /F1 11.00 Tf 1 0 0 1 72.00 417.89 Tm (That is why utilization falls as width grows.) Tj ET
+BT /F2 12.50 Tf 1 0 0 1 72.00 397.89 Tm (3. Part 3: AXPBY \(Compute vs Memory Bound\)) Tj ET
+BT /F2 11.00 Tf 1 0 0 1 72.00 381.89 Tm (3.1 Implementation) Tj ET
+BT 0.586 Tw /F1 11.00 Tf 1 0 0 1 72.00 367.89 Tm (The code is in axpbyWorker\(\) in axpbyThread.cpp. It computes result[i] = 2.5 * X[i] + \(-1.5\) * Y[i].) Tj ET
 BT 0 Tw ET
-BT /F1 9.00 Tf 1 0 0 1 295.39 38.00 Tm (3) Tj ET
+BT 3.477 Tw /F1 11.00 Tf 1 0 0 1 72.00 353.89 Tm (Unlike Part 1, we must use contiguous blocks: thread t owns indices from \(N * threadId\) /) Tj ET
+BT 0 Tw ET
+BT 0.033 Tw /F1 11.00 Tf 1 0 0 1 72.00 339.89 Tm (numThreads to \(N * \(threadId + 1\)\) / numThreads. Every index is covered once even when N does not) Tj ET
+BT 0 Tw ET
+BT 0.272 Tw /F1 11.00 Tf 1 0 0 1 72.00 325.89 Tm (divide evenly. Each thread writes a different part of result, so no locks are needed. Contiguous ranges) Tj ET
+BT 0 Tw ET
+BT /F1 11.00 Tf 1 0 0 1 72.00 311.89 Tm (also help memory streaming.) Tj ET
+BT /F1 11.00 Tf 1 0 0 1 72.00 293.89 Tm (Correctness passed --check for N = 1000003, 8000001, and 20000000.) Tj ET
+BT /F2 11.00 Tf 1 0 0 1 72.00 275.89 Tm (3.2 Results and graph) Tj ET
+BT /F3 10.00 Tf 1 0 0 1 72.00 261.89 Tm (Table 4. AXPBY results from ./axpby -n 20000000 --sweep --check.) Tj ET
+q 0.000 0.000 0.000 RG 0.90 w 72.00 255.89 m 472.00 255.89 l S Q
+BT /F2 10.00 Tf 1 0 0 1 99.22 245.89 Tm (Threads) Tj ET
+BT /F2 10.00 Tf 1 0 0 1 232.73 245.89 Tm (Time \(s\)) Tj ET
+BT /F2 10.00 Tf 1 0 0 1 356.88 245.89 Tm (GB/s) Tj ET
+BT /F2 10.00 Tf 1 0 0 1 431.32 245.89 Tm (Speedup) Tj ET
+q 0.000 0.000 0.000 RG 0.60 w 72.00 241.89 m 472.00 241.89 l S Q
+BT /F1 10.00 Tf 1 0 0 1 114.50 231.89 Tm (1) Tj ET
+BT /F1 10.00 Tf 1 0 0 1 240.50 231.89 Tm (0.0121) Tj ET
+BT /F1 10.00 Tf 1 0 0 1 355.50 231.89 Tm (26.48) Tj ET
+BT /F1 10.00 Tf 1 0 0 1 450.50 231.89 Tm (1.05) Tj ET
+BT /F1 10.00 Tf 1 0 0 1 114.50 217.89 Tm (2) Tj ET
+BT /F1 10.00 Tf 1 0 0 1 240.50 217.89 Tm (0.0092) Tj ET
+BT /F1 10.00 Tf 1 0 0 1 355.50 217.89 Tm (34.68) Tj ET
+BT /F1 10.00 Tf 1 0 0 1 450.50 217.89 Tm (1.37) Tj ET
+BT /F1 10.00 Tf 1 0 0 1 114.50 203.89 Tm (3) Tj ET
+BT /F1 10.00 Tf 1 0 0 1 240.50 203.89 Tm (0.0095) Tj ET
+BT /F1 10.00 Tf 1 0 0 1 355.50 203.89 Tm (33.51) Tj ET
+BT /F1 10.00 Tf 1 0 0 1 450.50 203.89 Tm (1.33) Tj ET
+BT /F1 10.00 Tf 1 0 0 1 114.50 189.89 Tm (4) Tj ET
+BT /F1 10.00 Tf 1 0 0 1 240.50 189.89 Tm (0.0097) Tj ET
+BT /F1 10.00 Tf 1 0 0 1 355.50 189.89 Tm (32.98) Tj ET
+BT /F1 10.00 Tf 1 0 0 1 450.50 189.89 Tm (1.30) Tj ET
+BT /F1 10.00 Tf 1 0 0 1 114.50 175.89 Tm (5) Tj ET
+BT /F1 10.00 Tf 1 0 0 1 240.50 175.89 Tm (0.0090) Tj ET
+BT /F1 10.00 Tf 1 0 0 1 355.50 175.89 Tm (35.44) Tj ET
+BT /F1 10.00 Tf 1 0 0 1 450.50 175.89 Tm (1.40) Tj ET
+BT /F1 10.00 Tf 1 0 0 1 114.50 161.89 Tm (6) Tj ET
+BT /F1 10.00 Tf 1 0 0 1 240.50 161.89 Tm (0.0094) Tj ET
+BT /F1 10.00 Tf 1 0 0 1 355.50 161.89 Tm (34.16) Tj ET
+BT /F1 10.00 Tf 1 0 0 1 450.50 161.89 Tm (1.35) Tj ET
+BT /F1 10.00 Tf 1 0 0 1 114.50 147.89 Tm (7) Tj ET
+BT /F1 10.00 Tf 1 0 0 1 240.50 147.89 Tm (0.0090) Tj ET
+BT /F1 10.00 Tf 1 0 0 1 355.50 147.89 Tm (35.38) Tj ET
+BT /F1 10.00 Tf 1 0 0 1 450.50 147.89 Tm (1.40) Tj ET
+BT /F1 10.00 Tf 1 0 0 1 114.50 133.89 Tm (8) Tj ET
+BT /F1 10.00 Tf 1 0 0 1 240.50 133.89 Tm (0.0090) Tj ET
+BT /F1 10.00 Tf 1 0 0 1 355.50 133.89 Tm (35.65) Tj ET
+BT /F1 10.00 Tf 1 0 0 1 450.50 133.89 Tm (1.41) Tj ET
+q 0.000 0.000 0.000 RG 0.90 w 72.00 129.89 m 472.00 129.89 l S Q
+BT /F1 10.00 Tf 1 0 0 1 295.14 44.00 Tm (3) Tj ET
 endstream
 endobj
 11 0 obj
 << /Type /Page /Parent 2 0 R /MediaBox [0 0 595.28 841.89] /Contents 10 0 R /Resources << /Font << /F1 3 0 R /F2 4 0 R /F3 5 0 R >> >> >>
 endobj
 12 0 obj
-<< /Length 6562 >>
+<< /Length 7260 >>
 stream
-BT 0.707 Tw /F1 10.50 Tf 1 0 0 1 64.00 777.89 Tm (overhead instead of additional throughput. Extra threads only help while there is genuinely idle hardware for) Tj ET
+q 0.750 0.750 0.750 RG 0.35 w [1 3] 0 d 102.00 579.89 m 513.28 579.89 l S Q
+BT /F1 9.00 Tf 1 0 0 1 91.50 576.89 Tm (0) Tj ET
+q 0.750 0.750 0.750 RG 0.35 w [1 3] 0 d 102.00 602.24 m 513.28 602.24 l S Q
+BT /F1 9.00 Tf 1 0 0 1 91.50 599.24 Tm (1) Tj ET
+q 0.750 0.750 0.750 RG 0.35 w [1 3] 0 d 102.00 624.60 m 513.28 624.60 l S Q
+BT /F1 9.00 Tf 1 0 0 1 91.50 621.60 Tm (2) Tj ET
+q 0.750 0.750 0.750 RG 0.35 w [1 3] 0 d 102.00 646.95 m 513.28 646.95 l S Q
+BT /F1 9.00 Tf 1 0 0 1 91.50 643.95 Tm (3) Tj ET
+q 0.750 0.750 0.750 RG 0.35 w [1 3] 0 d 102.00 669.30 m 513.28 669.30 l S Q
+BT /F1 9.00 Tf 1 0 0 1 91.50 666.30 Tm (4) Tj ET
+q 0.750 0.750 0.750 RG 0.35 w [1 3] 0 d 102.00 691.65 m 513.28 691.65 l S Q
+BT /F1 9.00 Tf 1 0 0 1 91.50 688.65 Tm (5) Tj ET
+q 0.750 0.750 0.750 RG 0.35 w [1 3] 0 d 102.00 714.01 m 513.28 714.01 l S Q
+BT /F1 9.00 Tf 1 0 0 1 91.50 711.01 Tm (6) Tj ET
+q 0.750 0.750 0.750 RG 0.35 w [1 3] 0 d 102.00 736.36 m 513.28 736.36 l S Q
+BT /F1 9.00 Tf 1 0 0 1 91.50 733.36 Tm (7) Tj ET
+q 0.750 0.750 0.750 RG 0.35 w [1 3] 0 d 102.00 758.71 m 513.28 758.71 l S Q
+BT /F1 9.00 Tf 1 0 0 1 91.50 755.71 Tm (8) Tj ET
+BT /F1 9.00 Tf 1 0 0 1 99.75 567.89 Tm (1) Tj ET
+BT /F1 9.00 Tf 1 0 0 1 158.50 567.89 Tm (2) Tj ET
+BT /F1 9.00 Tf 1 0 0 1 217.26 567.89 Tm (3) Tj ET
+BT /F1 9.00 Tf 1 0 0 1 276.01 567.89 Tm (4) Tj ET
+BT /F1 9.00 Tf 1 0 0 1 334.76 567.89 Tm (5) Tj ET
+BT /F1 9.00 Tf 1 0 0 1 393.52 567.89 Tm (6) Tj ET
+BT /F1 9.00 Tf 1 0 0 1 452.27 567.89 Tm (7) Tj ET
+BT /F1 9.00 Tf 1 0 0 1 511.03 567.89 Tm (8) Tj ET
+q 0.000 0.000 0.000 RG 1.00 w 102.00 579.89 m 102.00 769.89 l S Q
+q 0.000 0.000 0.000 RG 1.00 w 102.00 579.89 m 513.28 579.89 l S Q
+BT /F1 10.00 Tf 1 0 0 1 270.15 553.89 Tm (Number of threads) Tj ET
+BT /F1 10.00 Tf 0 1 -1 0 72.00 657.67 Tm (Speedup) Tj ET
+q 0.550 0.550 0.550 RG 1.15 w [5 3] 0 d 102.00 602.24 m 160.75 624.60 l S Q
+q 0.550 0.550 0.550 RG 1.15 w [5 3] 0 d 160.75 624.60 m 219.51 646.95 l S Q
+q 0.550 0.550 0.550 RG 1.15 w [5 3] 0 d 219.51 646.95 m 278.26 669.30 l S Q
+q 0.550 0.550 0.550 RG 1.15 w [5 3] 0 d 278.26 669.30 m 337.01 691.65 l S Q
+q 0.550 0.550 0.550 RG 1.15 w [5 3] 0 d 337.01 691.65 m 395.77 714.01 l S Q
+q 0.550 0.550 0.550 RG 1.15 w [5 3] 0 d 395.77 714.01 m 454.52 736.36 l S Q
+q 0.550 0.550 0.550 RG 1.15 w [5 3] 0 d 454.52 736.36 m 513.28 758.71 l S Q
+q 0.120 0.470 0.710 RG 1.35 w 102.00 603.36 m 160.75 610.51 l S Q
+q 0.120 0.470 0.710 RG 1.35 w 160.75 610.51 m 219.51 609.62 l S Q
+q 0.120 0.470 0.710 RG 1.35 w 219.51 609.62 m 278.26 608.95 l S Q
+q 0.120 0.470 0.710 RG 1.35 w 278.26 608.95 m 337.01 611.18 l S Q
+q 0.120 0.470 0.710 RG 1.35 w 337.01 611.18 m 395.77 610.07 l S Q
+q 0.120 0.470 0.710 RG 1.35 w 395.77 610.07 m 454.52 611.18 l S Q
+q 0.120 0.470 0.710 RG 1.35 w 454.52 611.18 m 513.28 611.41 l S Q
+q 0.120 0.470 0.710 rg 104.30 603.36 m 104.30 604.63 103.27 605.66 102.00 605.66 c 100.73 605.66 99.70 604.63 99.70 603.36 c 99.70 602.09 100.73 601.06 102.00 601.06 c 103.27 601.06 104.30 602.09 104.30 603.36 c f Q
+q 0.120 0.470 0.710 rg 163.05 610.51 m 163.05 611.78 162.02 612.81 160.75 612.81 c 159.48 612.81 158.45 611.78 158.45 610.51 c 158.45 609.24 159.48 608.21 160.75 608.21 c 162.02 608.21 163.05 609.24 163.05 610.51 c f Q
+q 0.120 0.470 0.710 rg 221.81 609.62 m 221.81 610.89 220.78 611.92 219.51 611.92 c 218.24 611.92 217.21 610.89 217.21 609.62 c 217.21 608.35 218.24 607.32 219.51 607.32 c 220.78 607.32 221.81 608.35 221.81 609.62 c f Q
+q 0.120 0.470 0.710 rg 280.56 608.95 m 280.56 610.22 279.53 611.25 278.26 611.25 c 276.99 611.25 275.96 610.22 275.96 608.95 c 275.96 607.68 276.99 606.65 278.26 606.65 c 279.53 606.65 280.56 607.68 280.56 608.95 c f Q
+q 0.120 0.470 0.710 rg 339.31 611.18 m 339.31 612.45 338.29 613.48 337.01 613.48 c 335.74 613.48 334.71 612.45 334.71 611.18 c 334.71 609.91 335.74 608.88 337.01 608.88 c 338.29 608.88 339.31 609.91 339.31 611.18 c f Q
+q 0.120 0.470 0.710 rg 398.07 610.07 m 398.07 611.34 397.04 612.37 395.77 612.37 c 394.50 612.37 393.47 611.34 393.47 610.07 c 393.47 608.80 394.50 607.77 395.77 607.77 c 397.04 607.77 398.07 608.80 398.07 610.07 c f Q
+q 0.120 0.470 0.710 rg 456.82 611.18 m 456.82 612.45 455.79 613.48 454.52 613.48 c 453.25 613.48 452.22 612.45 452.22 611.18 c 452.22 609.91 453.25 608.88 454.52 608.88 c 455.79 608.88 456.82 609.91 456.82 611.18 c f Q
+q 0.120 0.470 0.710 rg 515.58 611.41 m 515.58 612.68 514.55 613.71 513.28 613.71 c 512.01 613.71 510.98 612.68 510.98 611.41 c 510.98 610.14 512.01 609.11 513.28 609.11 c 514.55 609.11 515.58 610.14 515.58 611.41 c f Q
+q 0.550 0.550 0.550 RG 1.15 w [5 3] 0 d 112.00 762.89 m 130.00 762.89 l S Q
+BT /F1 9.00 Tf 1 0 0 1 136.00 759.89 Tm (Ideal) Tj ET
+q 0.120 0.470 0.710 RG 1.35 w 112.00 750.89 m 130.00 750.89 l S Q
+q 0.120 0.470 0.710 rg 123.00 750.89 m 123.00 751.99 122.10 752.89 121.00 752.89 c 119.90 752.89 119.00 751.99 119.00 750.89 c 119.00 749.79 119.90 748.89 121.00 748.89 c 122.10 748.89 123.00 749.79 123.00 750.89 c f Q
+BT /F1 9.00 Tf 1 0 0 1 136.00 747.89 Tm (AXPBY \(N=20M\)) Tj ET
+BT /F3 10.00 Tf 1 0 0 1 72.00 541.89 Tm (Figure 2. AXPBY speedup vs thread count.) Tj ET
+BT 0.918 Tw /F1 11.00 Tf 1 0 0 1 72.00 523.89 Tm (Figure 2 and Table 4 show AXPBY scaling. The blue curve rises a little from 1 to 2 threads \(about) Tj ET
 BT 0 Tw ET
-BT /F1 10.50 Tf 1 0 0 1 64.00 763.39 Tm (them to occupy, and after stage 4 there is not.) Tj ET
-BT /F2 13.50 Tf 1 0 0 1 64.00 740.89 Tm (3.  Part 2: SIMD Vectorisation of the Clamped Alternating Series) Tj ET
-q 0.45 G 0.70 w 64.00 734.89 m 531.28 734.89 l S Q
-BT /F2 11.50 Tf 1 0 0 1 64.00 716.89 Tm (3.1  The algorithm and why it resists vectorisation) Tj ET
-BT 2.885 Tw /F1 10.50 Tf 1 0 0 1 64.00 701.89 Tm (For each element the serial reference starts with acc = values[i] and then takes up to counts[i] steps,) Tj ET
+BT 0.899 Tw /F1 11.00 Tf 1 0 0 1 72.00 509.89 Tm (1.05x to 1.37x\), then stays flat near 1.3x to 1.4x through 8 threads. Bandwidth also plateaus around) Tj ET
 BT 0 Tw ET
-BT 0.735 Tw /F1 10.50 Tf 1 0 0 1 64.00 687.39 Tm (multiplying by values[i] on even steps and adding values[i] on odd steps. As soon as acc exceeds caps[i] the) Tj ET
+BT 0.855 Tw /F1 11.00 Tf 1 0 0 1 72.00 495.89 Tm (the mid-30s GB/s. Compared with Figure 1, where interleaved fractal reaches about 7.5x, this curve) Tj ET
 BT 0 Tw ET
-BT 0.329 Tw /F1 10.50 Tf 1 0 0 1 64.00 672.89 Tm (accumulator is replaced by the cap and that element stops early. Finally any result below 0.0001 is snapped to) Tj ET
+BT /F1 11.00 Tf 1 0 0 1 72.00 481.89 Tm (barely moves. That means extra threads are not the bottleneck anymore; memory is.) Tj ET
+BT /F2 11.00 Tf 1 0 0 1 72.00 463.89 Tm (3.3 Written analysis) Tj ET
+BT 1.299 Tw /F1 11.00 Tf 1 0 0 1 72.00 449.89 Tm (Which scales better, and why? The Part 1 fractal scales much better \(about 7.5x at 8 threads\) than) Tj ET
 BT 0 Tw ET
-BT 0.957 Tw /F1 10.50 Tf 1 0 0 1 64.00 658.39 Tm (exactly zero. The difficulty for SIMD is that both the trip count and the early exit are per-element: within a) Tj ET
+BT 1.490 Tw /F1 11.00 Tf 1 0 0 1 72.00 435.89 Tm (AXPBY \(about 1.3x to 1.4x\). The reason is arithmetic intensity: how much math you do per byte) Tj ET
 BT 0 Tw ET
-BT /F1 10.50 Tf 1 0 0 1 64.00 643.89 Tm (single vector, one lane may finish after two steps while another still has twenty-four steps remaining.) Tj ET
-BT /F2 11.50 Tf 1 0 0 1 64.00 622.39 Tm (3.2  Mask strategy) Tj ET
-BT 1.218 Tw /F1 10.50 Tf 1 0 0 1 64.00 607.39 Tm (The implementation processes the array in chunks of VECTOR_WIDTH and maintains two distinct masks,) Tj ET
+BT 1.152 Tw /F1 11.00 Tf 1 0 0 1 72.00 421.89 Tm (moved. The fractal does up to 300 iterations per pixel, so it is compute-bound and extra cores stay) Tj ET
 BT 0 Tw ET
-BT 0.934 Tw /F1 10.50 Tf 1 0 0 1 64.00 592.89 Tm (exactly as the assignment requires. The first, valid, is built with _pdc_init_first_n\(\) and marks the lanes that) Tj ET
+BT 0.112 Tw /F1 11.00 Tf 1 0 0 1 72.00 407.89 Tm (busy. AXPBY does only a little math per element but must move a lot of data, so it is memory-bound.) Tj ET
 BT 0 Tw ET
-BT 0.297 Tw /F1 10.50 Tf 1 0 0 1 64.00 578.39 Tm (correspond to real array elements; it is what makes the final partial chunk safe when N is not a multiple of the) Tj ET
+BT /F1 11.00 Tf 1 0 0 1 72.00 393.89 Tm (Once the memory bus is full, more threads help little.) Tj ET
+BT 0.597 Tw /F1 11.00 Tf 1 0 0 1 72.00 375.89 Tm (Why count 4*N*sizeof\(float\) bytes when each element looks like 2 reads and 1 write? The reads are) Tj ET
 BT 0 Tw ET
-BT 0.814 Tw /F1 10.50 Tf 1 0 0 1 64.00 563.89 Tm (vector width, and it is the gap deliberately left in the worked absVector\(\) example. The second, alive, tracks) Tj ET
+BT 1.615 Tw /F1 11.00 Tf 1 0 0 1 72.00 361.89 Tm (X[i] and Y[i]; the write is result[i] \(three floats\). The extra factor is write-allocate: before writing) Tj ET
 BT 0 Tw ET
-BT 1.293 Tw /F1 10.50 Tf 1 0 0 1 64.00 549.39 Tm (the lanes that have not yet clamped. On every step the two are combined with the still-has-steps predicate,) Tj ET
+BT 0.460 Tw /F1 11.00 Tf 1 0 0 1 72.00 347.89 Tm (result[i], the cache usually loads that line first, so result is counted as both a read and a write. That is) Tj ET
 BT 0 Tw ET
-BT 0.414 Tw /F1 10.50 Tf 1 0 0 1 64.00 534.89 Tm (obtained as _pdc_vgt_int\(counts, j\) because the instruction set provides no integer less-than, to form the work) Tj ET
-BT 0 Tw ET
-BT /F1 10.50 Tf 1 0 0 1 64.00 520.39 Tm (mask that gates the multiply or add.) Tj ET
-BT 0.965 Tw /F1 10.50 Tf 1 0 0 1 64.00 501.89 Tm (Clamping is handled in two moves. A comparison against caps produces the mask of lanes that just crossed) Tj ET
-BT 0 Tw ET
-BT 0.567 Tw /F1 10.50 Tf 1 0 0 1 64.00 487.39 Tm (their limit; _pdc_vmove_float\(\) writes the cap into those lanes, and _pdc_mask_not\(hitCap, alive\) then clears) Tj ET
-BT 0 Tw ET
-BT 1.399 Tw /F1 10.50 Tf 1 0 0 1 64.00 472.89 Tm (them from alive permanently. Because unmasked lanes of every arithmetic instruction retain their previous) Tj ET
-BT 0 Tw ET
-BT 0.945 Tw /F1 10.50 Tf 1 0 0 1 64.00 458.39 Tm (value, a cleared lane is frozen for the rest of the chunk even though its own step budget might still say it is) Tj ET
-BT 0 Tw ET
-BT 0.388 Tw /F1 10.50 Tf 1 0 0 1 64.00 443.89 Tm (active. The loop terminates as soon as the work mask is empty, checked with _pdc_cntbits\(\). Results matched) Tj ET
-BT 0 Tw ET
-BT 0.044 Tw /F1 10.50 Tf 1 0 0 1 64.00 429.39 Tm (the serial reference for N = 10000, for N = 10003 and for N = 7, which exercises both the tail path and the case) Tj ET
-BT 0 Tw ET
-BT /F1 10.50 Tf 1 0 0 1 64.00 414.89 Tm (where the array is smaller than one vector.) Tj ET
-BT /F2 11.50 Tf 1 0 0 1 64.00 393.39 Tm (3.3  Vector utilisation against vector width) Tj ET
-BT /F3 9.50 Tf 1 0 0 1 64.00 378.39 Tm (Table 5. Reported utilisation for ./altseries -s 10000 at each vector width.) Tj ET
-q 0.25 G 0.80 w 64.00 369.39 m 394.00 369.39 l S Q
-BT /F2 9.80 Tf 1 0 0 1 66.00 359.39 Tm (VECTOR_WIDTH) Tj ET
-BT /F2 9.80 Tf 1 0 0 1 315.32 359.39 Tm (Vector utilisation) Tj ET
-q 0.50 G 0.50 w 64.00 355.39 m 394.00 355.39 l S Q
-BT /F1 9.80 Tf 1 0 0 1 66.00 345.89 Tm (2) Tj ET
-BT /F1 9.80 Tf 1 0 0 1 362.69 345.89 Tm (67.6%) Tj ET
-BT /F1 9.80 Tf 1 0 0 1 66.00 332.39 Tm (4) Tj ET
-BT /F1 9.80 Tf 1 0 0 1 362.69 332.39 Tm (62.9%) Tj ET
-BT /F1 9.80 Tf 1 0 0 1 66.00 318.89 Tm (8) Tj ET
-BT /F1 9.80 Tf 1 0 0 1 362.69 318.89 Tm (59.1%) Tj ET
-BT /F1 9.80 Tf 1 0 0 1 66.00 305.39 Tm (16) Tj ET
-BT /F1 9.80 Tf 1 0 0 1 362.69 305.39 Tm (56.2%) Tj ET
-q 0.25 G 0.80 w 64.00 301.39 m 394.00 301.39 l S Q
-BT 1.226 Tw /F1 10.50 Tf 1 0 0 1 64.00 279.89 Tm (Utilisation decreases monotonically as the vector width grows, falling from 67.6 percent at width 2 to 56.2) Tj ET
-BT 0 Tw ET
-BT 0.242 Tw /F1 10.50 Tf 1 0 0 1 64.00 265.39 Tm (percent at width 16. The cause is that all lanes of a vector advance in lockstep, so the chunk cannot retire until) Tj ET
-BT 0 Tw ET
-BT 0.602 Tw /F1 10.50 Tf 1 0 0 1 64.00 250.89 Tm (its last busy lane finishes. Every lane that has already clamped, or that had a small counts[i] to begin with, is) Tj ET
-BT 0 Tw ET
-BT 0.124 Tw /F1 10.50 Tf 1 0 0 1 64.00 236.39 Tm (still issued as part of every subsequent instruction but contributes nothing; the hardware pays for the full width) Tj ET
-BT 0 Tw ET
-BT /F1 10.50 Tf 1 0 0 1 64.00 221.89 Tm (while only the surviving lanes do useful work.) Tj ET
-BT 1.349 Tw /F1 10.50 Tf 1 0 0 1 64.00 203.39 Tm (Widening the vector makes this worse because it groups more independent elements under one shared exit) Tj ET
-BT 0 Tw ET
-BT 0.412 Tw /F1 10.50 Tf 1 0 0 1 64.00 188.89 Tm (condition. At width 2 a chunk only needs its single partner lane to keep going, whereas at width 16 the chunk) Tj ET
-BT 0 Tw ET
-BT 0.117 Tw /F1 10.50 Tf 1 0 0 1 64.00 174.39 Tm (keeps stepping until the longest-running of sixteen elements is done, and by that point most of the other fifteen) Tj ET
-BT 0 Tw ET
-BT 0.251 Tw /F1 10.50 Tf 1 0 0 1 64.00 159.89 Tm (lanes have long since been masked off. In other words the number of wasted lane-slots per chunk grows faster) Tj ET
-BT 0 Tw ET
-BT 0.398 Tw /F1 10.50 Tf 1 0 0 1 64.00 145.39 Tm (than the useful work does, so the measured utilisation falls even though the total instruction count drops. This) Tj ET
-BT 0 Tw ET
-BT /F1 10.50 Tf 1 0 0 1 64.00 130.89 Tm (is the classic penalty of divergent control flow on wide SIMD units.) Tj ET
-BT /F1 9.00 Tf 1 0 0 1 295.39 38.00 Tm (4) Tj ET
+BT /F1 11.00 Tf 1 0 0 1 72.00 333.89 Tm (two floats for X and Y plus two for result, or 4*N*sizeof\(float\) in total.) Tj ET
+BT /F1 10.00 Tf 1 0 0 1 295.14 44.00 Tm (4) Tj ET
 endstream
 endobj
 13 0 obj
 << /Type /Page /Parent 2 0 R /MediaBox [0 0 595.28 841.89] /Contents 12 0 R /Resources << /Font << /F1 3 0 R /F2 4 0 R /F3 5 0 R >> >> >>
 endobj
-14 0 obj
-<< /Length 6489 >>
-stream
-BT /F2 11.50 Tf 1 0 0 1 64.00 774.89 Tm (3.4  Bonus: vectorised dot product) Tj ET
-BT 0.701 Tw /F1 10.50 Tf 1 0 0 1 64.00 759.89 Tm (The optional dotProductVector\(\) was implemented as well. Each chunk loads both operands, multiplies them) Tj ET
-BT 0 Tw ET
-BT 1.231 Tw /F1 10.50 Tf 1 0 0 1 64.00 745.39 Tm (lane-wise, and then reduces the product vector using log2\(VECTOR_WIDTH\) rounds of _pdc_hadd_float\(\)) Tj ET
-BT 0 Tw ET
-BT 0.613 Tw /F1 10.50 Tf 1 0 0 1 64.00 730.89 Tm (followed by _pdc_interleave_float\(\): the horizontal add sums lane pairs, and the interleave repacks those pair) Tj ET
-BT 0 Tw ET
-BT 1.556 Tw /F1 10.50 Tf 1 0 0 1 64.00 716.39 Tm (sums so that the next horizontal add can combine them again. The reduction therefore costs a logarithmic) Tj ET
-BT 0 Tw ET
-BT 1.226 Tw /F1 10.50 Tf 1 0 0 1 64.00 701.89 Tm (number of vector instructions per chunk rather than a linear scan over the lanes. Verified with ./altseries -s) Tj ET
-BT 0 Tw ET
-BT /F1 10.50 Tf 1 0 0 1 64.00 687.39 Tm (10000 -b, the result matched the serial dot product at every tested width.) Tj ET
-BT /F2 13.50 Tf 1 0 0 1 64.00 664.89 Tm (4.  Part 3: AXPBY, a Memory-Bandwidth-Bound Workload) Tj ET
-q 0.45 G 0.70 w 64.00 658.89 m 531.28 658.89 l S Q
-BT /F2 11.50 Tf 1 0 0 1 64.00 640.89 Tm (4.1  Contiguous static decomposition) Tj ET
-BT 1.089 Tw /F1 10.50 Tf 1 0 0 1 64.00 625.89 Tm (AXPBY computes result[i] = alpha * X[i] + beta * Y[i] with alpha = 2.5 and beta = -1.5. Part 3 requires a) Tj ET
-BT 0 Tw ET
-BT 0.959 Tw /F1 10.50 Tf 1 0 0 1 64.00 611.39 Tm (contiguous decomposition rather than the interleaved policy that won Part 1: thread t receives one unbroken) Tj ET
-BT 0 Tw ET
-BT 0.693 Tw /F1 10.50 Tf 1 0 0 1 64.00 596.89 Tm (index range, computed as start = \(N * threadId\) / numThreads and end = \(N * \(threadId + 1\)\) / numThreads.) Tj ET
-BT 0 Tw ET
-BT 0.250 Tw /F1 10.50 Tf 1 0 0 1 64.00 582.39 Tm (As in Part 1 this form absorbs the remainder automatically, so no index is dropped or computed twice when N) Tj ET
-BT 0 Tw ET
-BT 1.585 Tw /F1 10.50 Tf 1 0 0 1 64.00 567.89 Tm (is not divisible by the thread count. Contiguous ranges are the right choice here because each thread then) Tj ET
-BT 0 Tw ET
-BT 0.369 Tw /F1 10.50 Tf 1 0 0 1 64.00 553.39 Tm (streams sequentially through memory, which is what the hardware prefetchers expect; an interleaved mapping) Tj ET
-BT 0 Tw ET
-BT 0.914 Tw /F1 10.50 Tf 1 0 0 1 64.00 538.89 Tm (would have every thread touching every cache line. Each thread writes a disjoint slice of result, so again no) Tj ET
-BT 0 Tw ET
-BT /F1 10.50 Tf 1 0 0 1 64.00 524.39 Tm (mutex is required.) Tj ET
-BT /F2 11.50 Tf 1 0 0 1 64.00 502.89 Tm (4.2  Correctness across several array sizes) Tj ET
-BT 0.783 Tw /F1 10.50 Tf 1 0 0 1 64.00 487.89 Tm (Correctness was verified at three different problem sizes, including one that is not a multiple of 64, to prove) Tj ET
-BT 0 Tw ET
-BT /F1 10.50 Tf 1 0 0 1 64.00 473.39 Tm (that the remainder handling is right rather than merely lucky.) Tj ET
-BT /F3 9.50 Tf 1 0 0 1 64.00 454.89 Tm (Table 6. Correctness of the threaded AXPBY implementation for uneven N.) Tj ET
-q 0.25 G 0.80 w 64.00 445.89 m 544.00 445.89 l S Q
-BT /F2 9.80 Tf 1 0 0 1 135.21 435.89 Tm (Array size N) Tj ET
-BT /F2 9.80 Tf 1 0 0 1 218.23 435.89 Tm (Divisible by 64) Tj ET
-BT /F2 9.80 Tf 1 0 0 1 351.58 435.89 Tm (Threads) Tj ET
-BT /F2 9.80 Tf 1 0 0 1 460.56 435.89 Tm (--check result) Tj ET
-q 0.50 G 0.50 w 64.00 431.89 m 544.00 431.89 l S Q
-BT /F1 9.80 Tf 1 0 0 1 148.80 422.39 Tm (1,000,003) Tj ET
-BT /F1 9.80 Tf 1 0 0 1 244.10 422.39 Tm (no) Tj ET
-BT /F1 9.80 Tf 1 0 0 1 354.57 422.39 Tm (4 and 8) Tj ET
-BT /F1 9.80 Tf 1 0 0 1 470.76 422.39 Tm (PASSED) Tj ET
-BT /F1 9.80 Tf 1 0 0 1 148.80 408.89 Tm (8,000,001) Tj ET
-BT /F1 9.80 Tf 1 0 0 1 244.10 408.89 Tm (no) Tj ET
-BT /F1 9.80 Tf 1 0 0 1 354.57 408.89 Tm (3 and 5) Tj ET
-BT /F1 9.80 Tf 1 0 0 1 470.76 408.89 Tm (PASSED) Tj ET
-BT /F1 9.80 Tf 1 0 0 1 143.90 395.39 Tm (20,000,000) Tj ET
-BT /F1 9.80 Tf 1 0 0 1 244.10 395.39 Tm (no) Tj ET
-BT /F1 9.80 Tf 1 0 0 1 337.02 395.39 Tm (4 and sweep 1-8) Tj ET
-BT /F1 9.80 Tf 1 0 0 1 470.76 395.39 Tm (PASSED) Tj ET
-q 0.25 G 0.80 w 64.00 391.39 m 544.00 391.39 l S Q
-BT /F2 11.50 Tf 1 0 0 1 64.00 366.89 Tm (4.3  Measured scaling) Tj ET
-BT /F3 9.50 Tf 1 0 0 1 64.00 351.89 Tm (Table 7. ./axpby -n 20000000 --sweep --check.) Tj ET
-q 0.25 G 0.80 w 64.00 342.89 m 534.00 342.89 l S Q
-BT /F2 9.80 Tf 1 0 0 1 66.00 332.89 Tm (Threads) Tj ET
-BT /F2 9.80 Tf 1 0 0 1 238.44 332.89 Tm (Time \(s\)) Tj ET
-BT /F2 9.80 Tf 1 0 0 1 357.03 332.89 Tm (Bandwidth \(GB/s\)) Tj ET
-BT /F2 9.80 Tf 1 0 0 1 492.05 332.89 Tm (Speedup) Tj ET
-q 0.50 G 0.50 w 64.00 328.89 m 534.00 328.89 l S Q
-BT /F1 9.80 Tf 1 0 0 1 66.00 319.39 Tm (1) Tj ET
-BT /F1 9.80 Tf 1 0 0 1 246.05 319.39 Tm (0.0121) Tj ET
-BT /F1 9.80 Tf 1 0 0 1 406.05 319.39 Tm (26.482) Tj ET
-BT /F1 9.80 Tf 1 0 0 1 510.85 319.39 Tm (1.05) Tj ET
-BT /F1 9.80 Tf 1 0 0 1 66.00 305.89 Tm (2) Tj ET
-BT /F1 9.80 Tf 1 0 0 1 246.05 305.89 Tm (0.0092) Tj ET
-BT /F1 9.80 Tf 1 0 0 1 406.05 305.89 Tm (34.678) Tj ET
-BT /F1 9.80 Tf 1 0 0 1 510.85 305.89 Tm (1.37) Tj ET
-BT /F1 9.80 Tf 1 0 0 1 66.00 292.39 Tm (3) Tj ET
-BT /F1 9.80 Tf 1 0 0 1 246.05 292.39 Tm (0.0095) Tj ET
-BT /F1 9.80 Tf 1 0 0 1 406.05 292.39 Tm (33.512) Tj ET
-BT /F1 9.80 Tf 1 0 0 1 510.85 292.39 Tm (1.33) Tj ET
-BT /F1 9.80 Tf 1 0 0 1 66.00 278.89 Tm (4) Tj ET
-BT /F1 9.80 Tf 1 0 0 1 246.05 278.89 Tm (0.0097) Tj ET
-BT /F1 9.80 Tf 1 0 0 1 406.05 278.89 Tm (32.977) Tj ET
-BT /F1 9.80 Tf 1 0 0 1 510.85 278.89 Tm (1.30) Tj ET
-BT /F1 9.80 Tf 1 0 0 1 66.00 265.39 Tm (5) Tj ET
-BT /F1 9.80 Tf 1 0 0 1 246.05 265.39 Tm (0.0090) Tj ET
-BT /F1 9.80 Tf 1 0 0 1 406.05 265.39 Tm (35.436) Tj ET
-BT /F1 9.80 Tf 1 0 0 1 510.85 265.39 Tm (1.40) Tj ET
-BT /F1 9.80 Tf 1 0 0 1 66.00 251.89 Tm (6) Tj ET
-BT /F1 9.80 Tf 1 0 0 1 246.05 251.89 Tm (0.0094) Tj ET
-BT /F1 9.80 Tf 1 0 0 1 406.05 251.89 Tm (34.156) Tj ET
-BT /F1 9.80 Tf 1 0 0 1 510.85 251.89 Tm (1.35) Tj ET
-BT /F1 9.80 Tf 1 0 0 1 66.00 238.39 Tm (7) Tj ET
-BT /F1 9.80 Tf 1 0 0 1 246.05 238.39 Tm (0.0090) Tj ET
-BT /F1 9.80 Tf 1 0 0 1 406.05 238.39 Tm (35.379) Tj ET
-BT /F1 9.80 Tf 1 0 0 1 510.85 238.39 Tm (1.40) Tj ET
-BT /F1 9.80 Tf 1 0 0 1 66.00 224.89 Tm (8) Tj ET
-BT /F1 9.80 Tf 1 0 0 1 246.05 224.89 Tm (0.0090) Tj ET
-BT /F1 9.80 Tf 1 0 0 1 406.05 224.89 Tm (35.646) Tj ET
-BT /F1 9.80 Tf 1 0 0 1 510.85 224.89 Tm (1.41) Tj ET
-q 0.25 G 0.80 w 64.00 220.89 m 534.00 220.89 l S Q
-BT /F1 9.00 Tf 1 0 0 1 295.39 38.00 Tm (5) Tj ET
-endstream
-endobj
-15 0 obj
-<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595.28 841.89] /Contents 14 0 R /Resources << /Font << /F1 3 0 R /F2 4 0 R /F3 5 0 R >> >> >>
-endobj
-16 0 obj
-<< /Length 8884 >>
-stream
-q 0.86 G 0.35 w 98.00 581.89 m 519.28 581.89 l S Q
-BT /F1 8.50 Tf 1 0 0 1 87.75 578.89 Tm (0) Tj ET
-q 0.86 G 0.35 w 98.00 604.95 m 519.28 604.95 l S Q
-BT /F1 8.50 Tf 1 0 0 1 87.75 601.95 Tm (1) Tj ET
-q 0.86 G 0.35 w 98.00 628.01 m 519.28 628.01 l S Q
-BT /F1 8.50 Tf 1 0 0 1 87.75 625.01 Tm (2) Tj ET
-q 0.86 G 0.35 w 98.00 651.07 m 519.28 651.07 l S Q
-BT /F1 8.50 Tf 1 0 0 1 87.75 648.07 Tm (3) Tj ET
-q 0.86 G 0.35 w 98.00 674.13 m 519.28 674.13 l S Q
-BT /F1 8.50 Tf 1 0 0 1 87.75 671.13 Tm (4) Tj ET
-q 0.86 G 0.35 w 98.00 697.18 m 519.28 697.18 l S Q
-BT /F1 8.50 Tf 1 0 0 1 87.75 694.18 Tm (5) Tj ET
-q 0.86 G 0.35 w 98.00 720.24 m 519.28 720.24 l S Q
-BT /F1 8.50 Tf 1 0 0 1 87.75 717.24 Tm (6) Tj ET
-q 0.86 G 0.35 w 98.00 743.30 m 519.28 743.30 l S Q
-BT /F1 8.50 Tf 1 0 0 1 87.75 740.30 Tm (7) Tj ET
-q 0.86 G 0.35 w 98.00 766.36 m 519.28 766.36 l S Q
-BT /F1 8.50 Tf 1 0 0 1 87.75 763.36 Tm (8) Tj ET
-q 0.90 G 0.30 w 98.00 581.89 m 98.00 777.89 l S Q
-BT /F1 8.50 Tf 1 0 0 1 95.88 568.89 Tm (1) Tj ET
-q 0.90 G 0.30 w 158.18 581.89 m 158.18 777.89 l S Q
-BT /F1 8.50 Tf 1 0 0 1 156.06 568.89 Tm (2) Tj ET
-q 0.90 G 0.30 w 218.36 581.89 m 218.36 777.89 l S Q
-BT /F1 8.50 Tf 1 0 0 1 216.24 568.89 Tm (3) Tj ET
-q 0.90 G 0.30 w 278.55 581.89 m 278.55 777.89 l S Q
-BT /F1 8.50 Tf 1 0 0 1 276.42 568.89 Tm (4) Tj ET
-q 0.90 G 0.30 w 338.73 581.89 m 338.73 777.89 l S Q
-BT /F1 8.50 Tf 1 0 0 1 336.60 568.89 Tm (5) Tj ET
-q 0.90 G 0.30 w 398.91 581.89 m 398.91 777.89 l S Q
-BT /F1 8.50 Tf 1 0 0 1 396.79 568.89 Tm (6) Tj ET
-q 0.90 G 0.30 w 459.09 581.89 m 459.09 777.89 l S Q
-BT /F1 8.50 Tf 1 0 0 1 456.97 568.89 Tm (7) Tj ET
-q 0.90 G 0.30 w 519.28 581.89 m 519.28 777.89 l S Q
-BT /F1 8.50 Tf 1 0 0 1 517.15 568.89 Tm (8) Tj ET
-q 0.20 G 0.90 w 98.00 581.89 m 98.00 777.89 l S Q
-q 0.20 G 0.90 w 98.00 581.89 m 519.28 581.89 l S Q
-BT /F1 9.50 Tf 1 0 0 1 273.02 554.89 Tm (Number of threads) Tj ET
-BT /F1 9.50 Tf 0 1 -1 0 62.00 663.53 Tm (Speedup) Tj ET
-q 0.550 0.550 0.550 RG 1.00 w 107.03 608.41 m 134.11 618.78 l S Q
-q 0.550 0.550 0.550 RG 1.00 w 167.21 631.47 m 194.29 641.84 l S Q
-q 0.550 0.550 0.550 RG 1.00 w 227.39 654.53 m 254.47 664.90 l S Q
-q 0.550 0.550 0.550 RG 1.00 w 287.57 677.58 m 314.66 687.96 l S Q
-q 0.550 0.550 0.550 RG 1.00 w 347.76 700.64 m 374.84 711.02 l S Q
-q 0.550 0.550 0.550 RG 1.00 w 407.94 723.70 m 435.02 734.08 l S Q
-q 0.550 0.550 0.550 RG 1.00 w 468.12 746.76 m 495.20 757.14 l S Q
-q 0.120 0.470 0.710 RG 1.35 w 98.00 606.10 m 158.18 613.48 l S Q
-q 0.120 0.470 0.710 RG 1.35 w 158.18 613.48 m 218.36 612.56 l S Q
-q 0.120 0.470 0.710 RG 1.35 w 218.36 612.56 m 278.55 611.87 l S Q
-q 0.120 0.470 0.710 RG 1.35 w 278.55 611.87 m 338.73 614.17 l S Q
-q 0.120 0.470 0.710 RG 1.35 w 338.73 614.17 m 398.91 613.02 l S Q
-q 0.120 0.470 0.710 RG 1.35 w 398.91 613.02 m 459.09 614.17 l S Q
-q 0.120 0.470 0.710 RG 1.35 w 459.09 614.17 m 519.28 614.40 l S Q
-q 0.120 0.470 0.710 rg 100.00 606.10 m 100.00 607.21 99.10 608.10 98.00 608.10 c 96.90 608.10 96.00 607.21 96.00 606.10 c 96.00 605.00 96.90 604.10 98.00 604.10 c 99.10 604.10 100.00 605.00 100.00 606.10 c f Q
-q 0.120 0.470 0.710 rg 160.18 613.48 m 160.18 614.59 159.29 615.48 158.18 615.48 c 157.08 615.48 156.18 614.59 156.18 613.48 c 156.18 612.38 157.08 611.48 158.18 611.48 c 159.29 611.48 160.18 612.38 160.18 613.48 c f Q
-q 0.120 0.470 0.710 rg 220.36 612.56 m 220.36 613.66 219.47 614.56 218.36 614.56 c 217.26 614.56 216.36 613.66 216.36 612.56 c 216.36 611.45 217.26 610.56 218.36 610.56 c 219.47 610.56 220.36 611.45 220.36 612.56 c f Q
-q 0.120 0.470 0.710 rg 280.55 611.87 m 280.55 612.97 279.65 613.87 278.55 613.87 c 277.44 613.87 276.55 612.97 276.55 611.87 c 276.55 610.76 277.44 609.87 278.55 609.87 c 279.65 609.87 280.55 610.76 280.55 611.87 c f Q
-q 0.120 0.470 0.710 rg 340.73 614.17 m 340.73 615.28 339.83 616.17 338.73 616.17 c 337.62 616.17 336.73 615.28 336.73 614.17 c 336.73 613.07 337.62 612.17 338.73 612.17 c 339.83 612.17 340.73 613.07 340.73 614.17 c f Q
-q 0.120 0.470 0.710 rg 400.91 613.02 m 400.91 614.12 400.02 615.02 398.91 615.02 c 397.81 615.02 396.91 614.12 396.91 613.02 c 396.91 611.91 397.81 611.02 398.91 611.02 c 400.02 611.02 400.91 611.91 400.91 613.02 c f Q
-q 0.120 0.470 0.710 rg 461.09 614.17 m 461.09 615.28 460.20 616.17 459.09 616.17 c 457.99 616.17 457.09 615.28 457.09 614.17 c 457.09 613.07 457.99 612.17 459.09 612.17 c 460.20 612.17 461.09 613.07 461.09 614.17 c f Q
-q 0.120 0.470 0.710 rg 521.28 614.40 m 521.28 615.51 520.38 616.40 519.28 616.40 c 518.17 616.40 517.28 615.51 517.28 614.40 c 517.28 613.30 518.17 612.40 519.28 612.40 c 520.38 612.40 521.28 613.30 521.28 614.40 c f Q
-q 0.550 0.550 0.550 RG 1.20 w 112.00 768.89 m 132.00 768.89 l S Q
-BT /F1 8.80 Tf 1 0 0 1 138.00 765.89 Tm (Ideal linear) Tj ET
-q 0.120 0.470 0.710 RG 1.20 w 112.00 756.89 m 132.00 756.89 l S Q
-q 0.120 0.470 0.710 rg 123.90 756.89 m 123.90 757.94 123.05 758.79 122.00 758.79 c 120.95 758.79 120.10 757.94 120.10 756.89 c 120.10 755.84 120.95 754.99 122.00 754.99 c 123.05 754.99 123.90 755.84 123.90 756.89 c f Q
-BT /F1 8.80 Tf 1 0 0 1 138.00 753.89 Tm (AXPBY, N = 20M) Tj ET
-BT /F3 9.50 Tf 1 0 0 1 64.00 541.89 Tm (Figure 2. AXPBY speedup against thread count, compared with ideal linear scaling.) Tj ET
-BT 0.937 Tw /F1 10.50 Tf 1 0 0 1 64.00 521.89 Tm (The curve flattens almost immediately. Two threads already reach 1.37x, and every count from two to eight) Tj ET
-BT 0 Tw ET
-BT 1.841 Tw /F1 10.50 Tf 1 0 0 1 64.00 507.39 Tm (stays in a narrow band around 1.3x to 1.4x while the achieved bandwidth saturates in the mid-thirties of) Tj ET
-BT 0 Tw ET
-BT 2.675 Tw /F1 10.50 Tf 1 0 0 1 64.00 492.89 Tm (gigabytes per second. Adding threads beyond the second buys essentially nothing, because the limiting) Tj ET
-BT 0 Tw ET
-BT /F1 10.50 Tf 1 0 0 1 64.00 478.39 Tm (resource is not arithmetic throughput but the rate at which the memory system can supply and retire data.) Tj ET
-BT /F2 11.50 Tf 1 0 0 1 64.00 456.89 Tm (4.4  Compute-bound against memory-bound: the role of arithmetic intensity) Tj ET
-BT 0.378 Tw /F1 10.50 Tf 1 0 0 1 64.00 441.89 Tm (Comparing the two speedup curves makes the distinction concrete. The fractal renderer scales to roughly 7.5x) Tj ET
-BT 0 Tw ET
-BT 1.344 Tw /F1 10.50 Tf 1 0 0 1 64.00 427.39 Tm (at eight threads once its load is balanced, while AXPBY stalls near 1.4x. The deciding factor is arithmetic) Tj ET
-BT 0 Tw ET
-BT 0.126 Tw /F1 10.50 Tf 1 0 0 1 64.00 412.89 Tm (intensity, the ratio of arithmetic performed to bytes moved. The fractal performs up to 300 iterations of several) Tj ET
-BT 0 Tw ET
-BT 0.749 Tw /F1 10.50 Tf 1 0 0 1 64.00 398.39 Tm (multiplies and adds on a handful of registers per pixel, so its operands stay in registers and each core can be) Tj ET
-BT 0 Tw ET
-BT 0.661 Tw /F1 10.50 Tf 1 0 0 1 64.00 383.89 Tm (kept busy independently; adding cores adds usable floating-point throughput. AXPBY performs one multiply) Tj ET
-BT 0 Tw ET
-BT 0.172 Tw /F1 10.50 Tf 1 0 0 1 64.00 369.39 Tm (and one add per element and then must fetch the next element, so its intensity is only about 0.17 floating-point) Tj ET
-BT 0 Tw ET
-BT 0.025 Tw /F1 10.50 Tf 1 0 0 1 64.00 354.89 Tm (operations per byte. A couple of threads are enough to reach the bandwidth ceiling, and every additional thread) Tj ET
-BT 0 Tw ET
-BT 1.704 Tw /F1 10.50 Tf 1 0 0 1 64.00 340.39 Tm (simply queues behind the same shared memory path. This is why the fractal scales better, and why more) Tj ET
-BT 0 Tw ET
-BT /F1 10.50 Tf 1 0 0 1 64.00 325.89 Tm (threads are the wrong lever for a bandwidth-bound kernel.) Tj ET
-BT 0.473 Tw /F1 10.50 Tf 1 0 0 1 64.00 307.39 Tm (The harness also reports traffic as 4 * N * sizeof\(float\) even though the source shows only two reads and one) Tj ET
-BT 0 Tw ET
-BT 0.651 Tw /F1 10.50 Tf 1 0 0 1 64.00 292.89 Tm (write per element, which would suggest three floats. The extra factor comes from write-allocate behaviour in) Tj ET
-BT 0 Tw ET
-BT 0.559 Tw /F1 10.50 Tf 1 0 0 1 64.00 278.39 Tm (the cache hierarchy. Storing to result[i] does not write a lone float to memory; it writes into a cache line, and) Tj ET
-BT 0 Tw ET
-BT 1.526 Tw /F1 10.50 Tf 1 0 0 1 64.00 263.89 Tm (because that line is not already resident it must first be read from memory before the partial write can be) Tj ET
-BT 0 Tw ET
-BT 0.962 Tw /F1 10.50 Tf 1 0 0 1 64.00 249.39 Tm (merged into it. The result array is therefore transferred twice, once implicitly on the read-for-ownership and) Tj ET
-BT 0 Tw ET
-BT 0.379 Tw /F1 10.50 Tf 1 0 0 1 64.00 234.89 Tm (once when the dirty line is eventually evicted, giving two floats for X and Y plus two for result, or four floats) Tj ET
-BT 0 Tw ET
-BT 1.516 Tw /F1 10.50 Tf 1 0 0 1 64.00 220.39 Tm (per element in total. A non-temporal streaming store would avoid the extra read and bring the count back) Tj ET
-BT 0 Tw ET
-BT /F1 10.50 Tf 1 0 0 1 64.00 205.89 Tm (down to three.) Tj ET
-BT /F1 9.00 Tf 1 0 0 1 295.39 38.00 Tm (6) Tj ET
-endstream
-endobj
-17 0 obj
-<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595.28 841.89] /Contents 16 0 R /Resources << /Font << /F1 3 0 R /F2 4 0 R /F3 5 0 R >> >> >>
-endobj
-18 0 obj
-<< /Length 1816 >>
-stream
-BT /F2 13.50 Tf 1 0 0 1 64.00 773.89 Tm (5.  Summary) Tj ET
-q 0.45 G 0.70 w 64.00 767.89 m 531.28 767.89 l S Q
-BT /F1 10.50 Tf 1 0 0 1 70.00 752.89 Tm (-) Tj ET
-BT 0.396 Tw /F1 10.50 Tf 1 0 0 1 82.00 752.89 Tm (Part 1: the threaded renderer is pixel-identical to the serial reference on both views. The naive contiguous) Tj ET
-BT 0 Tw ET
-BT 0.533 Tw /F1 10.50 Tf 1 0 0 1 82.00 738.39 Tm (mapping is limited by load imbalance, diagnosed at three threads with per-thread timings; the interleaved) Tj ET
-BT 0 Tw ET
-BT /F1 10.50 Tf 1 0 0 1 82.00 723.89 Tm (mapping reaches 7.56x on View 1 and 7.41x on View 2 at eight threads with no synchronisation.) Tj ET
-BT /F1 10.50 Tf 1 0 0 1 70.00 705.39 Tm (-) Tj ET
-BT 0.011 Tw /F1 10.50 Tf 1 0 0 1 82.00 705.39 Tm (Part 2: clampedAltVector\(\) matches the serial output for any N and any vector width, including tails, using) Tj ET
-BT 0 Tw ET
-BT 0.146 Tw /F1 10.50 Tf 1 0 0 1 82.00 690.89 Tm (separate validity and liveness masks. Utilisation falls from 67.6 percent at width 2 to 56.2 percent at width) Tj ET
-BT 0 Tw ET
-BT 0.090 Tw /F1 10.50 Tf 1 0 0 1 82.00 676.39 Tm (16 because divergent lanes idle while their neighbours continue. The bonus dot product reduction was also) Tj ET
-BT 0 Tw ET
-BT /F1 10.50 Tf 1 0 0 1 82.00 661.89 Tm (implemented in logarithmic vector instructions.) Tj ET
-BT /F1 10.50 Tf 1 0 0 1 70.00 643.39 Tm (-) Tj ET
-BT 2.263 Tw /F1 10.50 Tf 1 0 0 1 82.00 643.39 Tm (Part 3: the contiguous AXPBY decomposition passes --check for uneven N and saturates near 1.4x,) Tj ET
-BT 0 Tw ET
-BT 1.740 Tw /F1 10.50 Tf 1 0 0 1 82.00 628.89 Tm (confirming that a low-arithmetic-intensity kernel is limited by memory bandwidth rather than by core) Tj ET
-BT 0 Tw ET
-BT /F1 10.50 Tf 1 0 0 1 82.00 614.39 Tm (count.) Tj ET
-BT /F1 9.00 Tf 1 0 0 1 295.39 38.00 Tm (7) Tj ET
-endstream
-endobj
-19 0 obj
-<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595.28 841.89] /Contents 18 0 R /Resources << /Font << /F1 3 0 R /F2 4 0 R /F3 5 0 R >> >> >>
-endobj
 xref
-0 20
+0 14
 0000000000 65535 f 
 0000000015 00000 n 
 0000000064 00000 n 
-0000000162 00000 n 
-0000000234 00000 n 
-0000000305 00000 n 
-0000000378 00000 n 
-0000006539 00000 n 
-0000006691 00000 n 
-0000014294 00000 n 
-0000014446 00000 n 
-0000032441 00000 n 
-0000032595 00000 n 
-0000039210 00000 n 
-0000039364 00000 n 
-0000045906 00000 n 
-0000046060 00000 n 
-0000054997 00000 n 
-0000055151 00000 n 
-0000057020 00000 n 
+0000000141 00000 n 
+0000000213 00000 n 
+0000000284 00000 n 
+0000000357 00000 n 
+0000005222 00000 n 
+0000005374 00000 n 
+0000022820 00000 n 
+0000022972 00000 n 
+0000029688 00000 n 
+0000029842 00000 n 
+0000037155 00000 n 
 trailer
-<< /Size 20 /Root 1 0 R >>
+<< /Size 14 /Root 1 0 R >>
 startxref
-57174
+37309
 %%EOF
