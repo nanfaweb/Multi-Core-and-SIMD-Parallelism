@@ -1,0 +1,22 @@
+Part 1:
+
+FRACTAL_INTERLEAVE=0 ./build.sh
+./fractal -t 2 --check
+./fractal -t 3 --view 2
+./fractal --sweep --check --view 1
+
+
+Part 2:
+
+./altseries -s 10000
+./altseries -s 10000 -b
+
+
+Part 3:
+
+cd "../program 5/prog5_axpby"
+./axpby -t 4
+./axpby -t 4 --check
+./axpby --sweep --check
+./axpby -n 1000003 -t 4 --check
+./axpby -n 20000000 -t 4 --check
